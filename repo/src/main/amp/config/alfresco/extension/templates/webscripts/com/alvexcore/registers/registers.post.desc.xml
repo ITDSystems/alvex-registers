@@ -1,0 +1,9 @@
+<webscript>
+    <shortname>DataList Registers Webscript</shortname>
+    <description>Returns site's datalist properties</description>
+    <url>/registers/datalist.xlsx</url>
+    <authentication>user</authentication>
+    <format default=''>argument</format>
+    <transaction>required</transaction>
+    <!--<lifecycle>sample</lifecycle>-->
+</webscript>

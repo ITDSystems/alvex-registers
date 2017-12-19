@@ -5,4 +5,10 @@
 
     <bean id="alvex-registers" parent="alvex-extension" class="com.alvexcore.repo.RegistersExtension"/>
 
+
+    <bean id="webscript.com.alvexcore.registers.registers.post" class="com.alvexcore.repo.registers.RegistryAsXlsx" parent="webscript">
+        <property name="nodeService" ref="NodeService"/>
+        <property name="namespaceService" ref="NamespaceService"/>
+        <property name="dictionaryService" ref="DictionaryService"/>
+    </bean>
 </beans>

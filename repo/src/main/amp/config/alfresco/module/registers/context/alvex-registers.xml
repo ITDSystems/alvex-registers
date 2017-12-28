@@ -11,4 +11,19 @@
         <property name="namespaceService" ref="NamespaceService"/>
         <property name="dictionaryService" ref="DictionaryService"/>
     </bean>
+
+    <bean id="alvex-registers-model" parent="dictionaryModelBootstrap" depends-on="dictionaryBootstrap">
+		<!-- Register resource bundles -->
+		<property name="labels">
+			<list>
+				<value>alfresco.module.registers.messages.alvex-registers-model</value>
+			</list>
+		</property>
+		<!-- Register models -->
+		<property name="models">
+			<list>
+				<value>alfresco/module/registers/models/alvex-registers-model.xml</value>
+			</list>
+		</property>
+	</bean>
 </beans>

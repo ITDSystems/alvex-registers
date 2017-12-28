@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model name="alvexreg:registers_model" xmlns="http://www.alfresco.org/model/dictionary/1.0"
+                                       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                       xsi:schemaLocation="http://www.alfresco.org/model/dictionary/1.0
+                                       modelSchema.xsd">
+
+  <description>Alvex Registers Model</description>
+  <author>ITD Systems</author>
+  <published>2017-12-28</published>
+  <version>1.0</version>
+
+  <imports>
+    <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
+    <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+    <import uri="http://www.alfresco.org/model/system/1.0" prefix="sys"/>
+  </imports>
+
+  <namespaces>
+    <namespace uri="http://alvexcore.com/prefix/alvexreg" prefix="alvexreg"/>
+  </namespaces>
+
+  <types>
+    <type name="alvexreg:register">
+      <title>Register container type</title>
+      <parent>cm:folder</parent>
+      <properties>
+        <property name="alvexreg:registerItemType">
+          <title>Register Item Type</title>
+          <description>Determines which Data Dictionary type will be used when create new items within the Register.</description>
+          <type>d:text</type>
+          <mandatory>false</mandatory>
+          <index enabled="true"/>
+        </property>
+      </properties>
+      <associations/>
+      <overrides/>
+      <mandatory-aspects/>
+    </type>
+    <type name="alvexreg:registerItem">
+      <title>Register parent type</title>
+      <parent>cm:content</parent>
+      <properties/>
+      <associations/>
+      <overrides/>
+      <mandatory-aspects/>
+    </type>
+  </types>
+</model>

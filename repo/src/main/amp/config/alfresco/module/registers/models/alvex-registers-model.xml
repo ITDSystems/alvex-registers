@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<model name="alvexreg:registers_model" xmlns="http://www.alfresco.org/model/dictionary/1.0"
-                                       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                                       xsi:schemaLocation="http://www.alfresco.org/model/dictionary/1.0
+<model
+  name="alvexreg:registers_model"
+  xmlns="http://www.alfresco.org/model/dictionary/1.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.alfresco.org/model/dictionary/1.0
                                        modelSchema.xsd">
 
   <description>Alvex Registers Model</description>
@@ -40,10 +42,166 @@
     <type name="alvexreg:registerItem">
       <title>Register parent type</title>
       <parent>cm:content</parent>
-      <properties/>
+      <properties>
+        <property name="alvexreg:id">
+          <type>d:text</type>
+          <mandatory>true</mandatory>
+          <index enabled="true">
+            <atomic>true</atomic>
+            <stored>true</stored>
+            <tokenised>both</tokenised>
+          </index>
+        </property>
+        <property name="alvexreg:registerDate">
+          <type>d:date</type>
+          <mandatory>true</mandatory>
+          <index enabled="true">
+            <atomic>true</atomic>
+            <stored>true</stored>
+            <tokenised>both</tokenised>
+          </index>
+        </property>
+      </properties>
       <associations/>
       <overrides/>
       <mandatory-aspects/>
     </type>
+    <type name="alvexreg:invoice">
+      <parent>alvexreg:registerItem</parent>
+      <properties>
+        <property name="alvexreg:invoiceSummary">
+          <type>d:text</type>
+          <index enabled="true">
+            <atomic>true</atomic>
+            <stored>true</stored>
+            <tokenised>both</tokenised>
+          </index>
+        </property>
+        <property name="alvexreg:invoiceDate">
+          <type>d:date</type>
+          <mandatory>true</mandatory>
+          <index enabled="true">
+            <atomic>true</atomic>
+            <stored>true</stored>
+            <tokenised>both</tokenised>
+          </index>
+        </property>
+        <property name="alvexreg:paymentDate">
+          <type>d:date</type>
+          <index enabled="true">
+            <atomic>true</atomic>
+            <stored>true</stored>
+            <tokenised>both</tokenised>
+          </index>
+        </property>
+        <property name="alvexreg:amount">
+          <type>d:float</type>
+          <index enabled="true">
+            <atomic>true</atomic>
+            <stored>true</stored>
+            <tokenised>both</tokenised>
+          </index>
+        </property>
+        <property name="alvexreg:currency">
+          <type>d:text</type>
+          <index enabled="true">
+            <atomic>true</atomic>
+            <stored>true</stored>
+            <tokenised>both</tokenised>
+          </index>
+        </property>
+        <property name="alvexreg:ispaid">
+          <type>d:boolean</type>
+          <index enabled="true">
+            <atomic>true</atomic>
+            <stored>true</stored>
+            <tokenised>both</tokenised>
+          </index>
+        </property>
+      </properties>
+
+      <mandatory-aspects>
+        <aspect>alvexreg:contractorable</aspect>
+        <!--aspect>alvexreg:withPrimaryDocument</aspect-->
+        <aspect>alvexreg:withLinkedDocuments</aspect>
+        <aspect>alvexreg:withManager</aspect>
+        <aspect>alvexreg:expiring</aspect>
+      </mandatory-aspects>
+    </type>
   </types>
+
+  <aspects>
+    <aspect name="alvexreg:contractorable">
+      <properties>
+        <property name="alvexreg:contractor">
+          <type>d:text</type>
+          <mandatory>true</mandatory>
+          <index enabled="true">
+            <atomic>true</atomic>
+            <stored>true</stored>
+            <tokenised>both</tokenised>
+          </index>
+        </property>
+      </properties>
+    </aspect>
+    <!--aspect name="alvexreg:withPrimaryDocument">
+      <associations>
+        <association name="alvexreg:primaryDocument">
+          <source>
+            <mandatory>false</mandatory>
+            <many>true</many>
+          </source>
+          <target>
+            <class>alvexreg:agreement</class>
+            <mandatory>false</mandatory>
+            <many>true</many>
+          </target>
+        </association>
+      </associations>
+    </aspect-->
+
+    <aspect name="alvexreg:withLinkedDocuments">
+      <associations>
+        <association name="alvexreg:linkedDocuments">
+          <source>
+            <mandatory>false</mandatory>
+            <many>true</many>
+          </source>
+          <target>
+            <class>alvexreg:registerItem</class>
+            <mandatory>false</mandatory>
+            <many>true</many>
+          </target>
+        </association>
+      </associations>
+    </aspect>
+    <aspect name="alvexreg:withManager">
+      <associations>
+        <association name="alvexreg:documentManager">
+          <source>
+            <mandatory>false</mandatory>
+            <many>true</many>
+          </source>
+          <target>
+            <class>cm:person</class>
+            <mandatory>false</mandatory>
+            <many>false</many>
+          </target>
+        </association>
+      </associations>
+    </aspect>
+    <aspect name="alvexreg:expiring">
+      <properties>
+        <property name="alvexreg:expiryDate">
+          <type>d:date</type>
+          <index enabled="true">
+            <atomic>true</atomic>
+            <stored>true</stored>
+            <tokenised>both</tokenised>
+          </index>
+        </property>
+      </properties>
+    </aspect>
+  </aspects>
+
 </model>

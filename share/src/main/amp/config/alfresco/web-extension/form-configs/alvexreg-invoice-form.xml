@@ -1,0 +1,50 @@
+<alfresco-config>
+  <config evaluator="model-type" condition="alvexreg:invoice">
+    <forms>
+      <form id="datagrid">
+        <field-visibility>
+          <show id="alvexreg:id"/>
+          <show id="alvexreg:invoiceSummary"/>
+          <show id="alvexreg:invoiceDate"/>
+        </field-visibility>
+      </form>
+      <form>
+        <field-visibility>
+          <show id="alvexreg:id"/>
+          <show id="alvexreg:registerDate"/>
+          <show id="alvexreg:invoiceSummary"/>
+          <show id="alvexreg:invoiceDate"/>
+          <show id="alvexreg:invoicePaymentDate"/>
+          <show id="alvexreg:invoiceAmount"/>
+          <show id="alvexreg:invoiceCurrency"/>
+          <show id="alvexreg:invoiceIsPaid"/>
+          <show id="alvexreg:invoiceContractor"/>
+          <show id="alvexreg:invoiceExpiryDate"/>
+          <show id="alvexreg:invoiceLinkedDocuments"/>
+          <show id="alvexreg:invoiceDocumentManager"/>
+        </field-visibility>
+      </form>
+    </forms>
+  </config>
+
+  <config evaluator="node-type" condition="alvexreg:invoice">
+    <forms>
+      <form>
+        <field-visibility>
+          <show id="alvexreg:id"/>
+          <show id="alvexreg:registerDate"/>
+          <show id="alvexreg:invoiceSummary"/>
+          <show id="alvexreg:invoiceDate"/>
+          <show id="alvexreg:invoicePaymentDate"/>
+          <show id="alvexreg:invoiceAmount"/>
+          <show id="alvexreg:invoiceCurrency"/>
+          <show id="alvexreg:invoiceIsPaid"/>
+          <show id="alvexreg:invoiceContractor"/>
+          <show id="alvexreg:invoiceExpiryDate"/>
+          <show id="alvexreg:invoiceLinkedDocuments"/>
+          <show id="alvexreg:invoiceDocumentManager"/>
+        </field-visibility>
+      </form>
+    </forms>
+  </config>
+</alfresco-config>

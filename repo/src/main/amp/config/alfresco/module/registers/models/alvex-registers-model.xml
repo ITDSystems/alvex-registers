@@ -86,7 +86,7 @@
             <tokenised>both</tokenised>
           </index>
         </property>
-        <property name="alvexreg:paymentDate">
+        <property name="alvexreg:invoicePaymentDate">
           <type>d:date</type>
           <index enabled="true">
             <atomic>true</atomic>
@@ -94,7 +94,7 @@
             <tokenised>both</tokenised>
           </index>
         </property>
-        <property name="alvexreg:amount">
+        <property name="alvexreg:invoiceAmount">
           <type>d:float</type>
           <index enabled="true">
             <atomic>true</atomic>
@@ -102,7 +102,7 @@
             <tokenised>both</tokenised>
           </index>
         </property>
-        <property name="alvexreg:currency">
+        <property name="alvexreg:invoiceCurrency">
           <type>d:text</type>
           <index enabled="true">
             <atomic>true</atomic>
@@ -110,7 +110,7 @@
             <tokenised>both</tokenised>
           </index>
         </property>
-        <property name="alvexreg:ispaid">
+        <property name="alvexreg:invoiceIsPaid">
           <type>d:boolean</type>
           <index enabled="true">
             <atomic>true</atomic>
@@ -118,22 +118,7 @@
             <tokenised>both</tokenised>
           </index>
         </property>
-      </properties>
-
-      <mandatory-aspects>
-        <aspect>alvexreg:contractorable</aspect>
-        <!--aspect>alvexreg:withPrimaryDocument</aspect-->
-        <aspect>alvexreg:withLinkedDocuments</aspect>
-        <aspect>alvexreg:withManager</aspect>
-        <aspect>alvexreg:expiring</aspect>
-      </mandatory-aspects>
-    </type>
-  </types>
-
-  <aspects>
-    <aspect name="alvexreg:contractorable">
-      <properties>
-        <property name="alvexreg:contractor">
+        <property name="alvexreg:invoiceContractor">
           <type>d:text</type>
           <mandatory>true</mandatory>
           <index enabled="true">
@@ -142,27 +127,17 @@
             <tokenised>both</tokenised>
           </index>
         </property>
+        <property name="alvexreg:invoiceExpiryDate">
+          <type>d:date</type>
+          <index enabled="true">
+            <atomic>true</atomic>
+            <stored>true</stored>
+            <tokenised>both</tokenised>
+          </index>
+        </property>
       </properties>
-    </aspect>
-    <!--aspect name="alvexreg:withPrimaryDocument">
       <associations>
-        <association name="alvexreg:primaryDocument">
-          <source>
-            <mandatory>false</mandatory>
-            <many>true</many>
-          </source>
-          <target>
-            <class>alvexreg:agreement</class>
-            <mandatory>false</mandatory>
-            <many>true</many>
-          </target>
-        </association>
-      </associations>
-    </aspect-->
-
-    <aspect name="alvexreg:withLinkedDocuments">
-      <associations>
-        <association name="alvexreg:linkedDocuments">
+        <association name="alvexreg:invoiceLinkedDocuments">
           <source>
             <mandatory>false</mandatory>
             <many>true</many>
@@ -173,11 +148,7 @@
             <many>true</many>
           </target>
         </association>
-      </associations>
-    </aspect>
-    <aspect name="alvexreg:withManager">
-      <associations>
-        <association name="alvexreg:documentManager">
+        <association name="alvexreg:invoiceDocumentManager">
           <source>
             <mandatory>false</mandatory>
             <many>true</many>
@@ -189,19 +160,7 @@
           </target>
         </association>
       </associations>
-    </aspect>
-    <aspect name="alvexreg:expiring">
-      <properties>
-        <property name="alvexreg:expiryDate">
-          <type>d:date</type>
-          <index enabled="true">
-            <atomic>true</atomic>
-            <stored>true</stored>
-            <tokenised>both</tokenised>
-          </index>
-        </property>
-      </properties>
-    </aspect>
-  </aspects>
+    </type>
+  </types>
 
 </model>

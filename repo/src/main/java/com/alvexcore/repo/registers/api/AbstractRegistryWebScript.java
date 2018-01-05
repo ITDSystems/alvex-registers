@@ -22,10 +22,12 @@ import org.alfresco.model.ContentModel;
 import org.alfresco.repo.dictionary.constraint.ListOfValuesConstraint;
 import org.alfresco.repo.i18n.MessageService;
 import org.alfresco.service.ServiceRegistry;
+import org.alfresco.service.cmr.dictionary.AspectDefinition;
 import org.alfresco.service.cmr.dictionary.AssociationDefinition;
 import org.alfresco.service.cmr.dictionary.ConstraintDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.dictionary.PropertyDefinition;
+import org.alfresco.service.cmr.dictionary.TypeDefinition;
 import org.alfresco.service.cmr.model.FileFolderService;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
@@ -140,6 +142,40 @@ public abstract class AbstractRegistryWebScript extends AbstractWebScript implem
             //
         }
         return resp;
+    }
+
+    protected Map<QName, PropertyDefinition> getAllProperties(QName typeName)
+    {
+        return getAllProperties(dictionaryService.getType(typeName));
+    }
+
+    protected Map<QName, PropertyDefinition> getAllProperties(TypeDefinition typeDef)
+    {
+        Map<QName, PropertyDefinition> props = new HashMap<>();
+        props.putAll(typeDef.getProperties());
+
+        List<AspectDefinition> aspects = typeDef.getDefaultAspects(true);
+        for(AspectDefinition aspect : aspects) {
+            props.putAll(aspect.getProperties());
+        }
+        return props;
+    }
+
+    protected Map<QName, AssociationDefinition> getAllAssociations(QName typeName)
+    {
+        return getAllAssociations(dictionaryService.getType(typeName));
+    }
+
+    protected Map<QName, AssociationDefinition> getAllAssociations(TypeDefinition typeDef)
+    {
+        Map<QName, AssociationDefinition> assocs = new HashMap<>();
+        assocs.putAll(typeDef.getAssociations());
+
+        List<AspectDefinition> aspects = typeDef.getDefaultAspects(true);
+        for(AspectDefinition aspect : aspects) {
+            assocs.putAll(aspect.getAssociations());
+        }
+        return assocs;
     }
 
     protected JSONObject getPropertyDescriptionJSON(QName propQName)

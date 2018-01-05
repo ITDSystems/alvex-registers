@@ -35,11 +35,11 @@ public class TypeDescription extends AbstractRegistryWebScript {
 
             JSONArray fields = new JSONArray();
 
-            Map<QName, PropertyDefinition> props = typeDef.getProperties();
+            Map<QName, PropertyDefinition> props = getAllProperties(typeDef);
             for(QName propQName : props.keySet()) {
                 fields.put(getPropertyDescriptionJSON(propQName));
             }
-            Map<QName, AssociationDefinition> assocs = typeDef.getAssociations();
+            Map<QName, AssociationDefinition> assocs = getAllAssociations(typeDef);
             for(QName assocQName : assocs.keySet()) {
                 fields.put(getAssociationDescriptionJSON(assocQName));
             }

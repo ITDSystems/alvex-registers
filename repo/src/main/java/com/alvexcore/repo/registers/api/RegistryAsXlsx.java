@@ -11,7 +11,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.content.MimetypeMap;
-import org.alfresco.service.cmr.dictionary.AspectDefinition;
 import org.alfresco.service.cmr.dictionary.PropertyDefinition;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -134,15 +133,9 @@ public class RegistryAsXlsx extends AbstractRegistryWebScript {
         }
         else {
             QName typeDef = nodeService.getType(itemsNodes.get(0));
-            Map<QName, PropertyDefinition> props = dictionaryService.getType(typeDef).getProperties();
-            List<AspectDefinition> aspects = dictionaryService.getType(typeDef).getDefaultAspects(true);
+            Map<QName, PropertyDefinition> props = getAllProperties(typeDef);
             List<QName> headers = new ArrayList<>(props.keySet());
             List<String> values = new ArrayList<>();
-
-            for(AspectDefinition aspect : aspects) {
-                Map<QName, PropertyDefinition> aspectProps = aspect.getProperties();
-                headers.addAll(aspectProps.keySet());
-            }
 
             headers = headers.stream()
                     .filter(e -> !excludeList.contains(e.toPrefixString(namespaceService)))

@@ -5,25 +5,19 @@
 
     <bean id="alvex-registers" parent="alvex-extension" class="com.alvexcore.repo.RegistersExtension"/>
 
-
-    <bean id="webscript.com.alvexcore.registers.registers.post" class="com.alvexcore.repo.registers.RegistryAsXlsx" parent="webscript">
-        <property name="nodeService" ref="NodeService"/>
-        <property name="namespaceService" ref="NamespaceService"/>
-        <property name="dictionaryService" ref="DictionaryService"/>
+    <bean id="alvex-registers-model" parent="dictionaryModelBootstrap" depends-on="dictionaryBootstrap">
+        <!-- Register resource bundles -->
+        <property name="labels">
+            <list>
+                <value>alfresco.module.registers.messages.alvex-registers-model</value>
+            </list>
+        </property>
+        <!-- Register models -->
+        <property name="models">
+            <list>
+                <value>alfresco/module/registers/models/alvex-registers-model.xml</value>
+            </list>
+        </property>
     </bean>
 
-    <bean id="alvex-registers-model" parent="dictionaryModelBootstrap" depends-on="dictionaryBootstrap">
-		<!-- Register resource bundles -->
-		<property name="labels">
-			<list>
-				<value>alfresco.module.registers.messages.alvex-registers-model</value>
-			</list>
-		</property>
-		<!-- Register models -->
-		<property name="models">
-			<list>
-				<value>alfresco/module/registers/models/alvex-registers-model.xml</value>
-			</list>
-		</property>
-	</bean>
 </beans>

@@ -1,5 +1,4 @@
-package com.alvexcore.repo.registers;
-
+package com.alvexcore.repo.registers.api;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -10,17 +9,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
-
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.content.MimetypeMap;
 import org.alfresco.service.cmr.dictionary.AspectDefinition;
-import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.dictionary.PropertyDefinition;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
 import org.apache.poi.ss.usermodel.CreationHelper;
@@ -30,29 +24,13 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.springframework.extensions.webscripts.*;
+import org.springframework.extensions.webscripts.Status;
+import org.springframework.extensions.webscripts.WebScriptException;
+import org.springframework.extensions.webscripts.WebScriptRequest;
+import org.springframework.extensions.webscripts.WebScriptResponse;
 
 
-
-public class RegistryAsXlsx extends AbstractWebScript {
-
-    private NamespaceService namespaceService;
-
-    public void setNamespaceService(NamespaceService namespaceService) {
-        this.namespaceService = namespaceService;
-    }
-
-    private NodeService nodeService;
-
-    public void setNodeService(NodeService nodeService) {
-        this.nodeService = nodeService;
-    }
-
-    private DictionaryService dictionaryService;
-
-    public void setDictionaryService(DictionaryService dictionaryService) {
-        this.dictionaryService = dictionaryService;
-    }
+public class RegistryAsXlsx extends AbstractRegistryWebScript {
 
     @Override
     public void execute(WebScriptRequest webScriptRequest, WebScriptResponse webScriptResponse) throws IOException {

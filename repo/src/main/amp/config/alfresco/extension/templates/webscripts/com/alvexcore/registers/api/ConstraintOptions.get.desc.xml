@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Get constraint options</shortname>
+  <description>Get constraint options</description>
+  <url>/api/alvex/registers/model/constraints/{name}</url>
+  <authentication>user</authentication>
+  <format default='json'>any</format>
+  <family>Alvex registers API</family>
+</webscript>

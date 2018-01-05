@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Get single registry item</shortname>
+  <description>Get single registry item</description>
+  <url>/api/alvex/registers/items/{itemid}</url>
+  <authentication>user</authentication>
+  <format default='json'>any</format>
+  <family>Alvex registers API</family>
+</webscript>

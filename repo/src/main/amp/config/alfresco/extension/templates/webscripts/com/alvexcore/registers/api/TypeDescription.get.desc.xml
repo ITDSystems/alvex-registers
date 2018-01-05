@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Get type description</shortname>
+  <description>Get type description</description>
+  <url>/api/alvex/registers/model/type/{name}</url>
+  <authentication>user</authentication>
+  <format default='json'>any</format>
+  <family>Alvex registers API</family>
+</webscript>

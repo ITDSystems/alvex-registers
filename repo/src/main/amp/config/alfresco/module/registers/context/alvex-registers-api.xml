@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<!--suppress SpringFacetInspection -->
+<beans>
+
+    <bean id='AbstractRegistryWebScript' abstract="true" parent='webscript'>
+        <property name="serviceRegistry" ref="ServiceRegistry" />
+    </bean>
+
+    <bean id="webscript.com.alvexcore.registers.api.ConstraintOptions.get" 
+          class="com.alvexcore.repo.registers.api.ConstraintOptions" 
+          parent="AbstractRegistryWebScript"/>
+
+    <bean id="webscript.com.alvexcore.registers.api.RegistryAsXlsx.post" 
+          class="com.alvexcore.repo.registers.api.RegistryAsXlsx" 
+          parent="AbstractRegistryWebScript"/>
+
+    <bean id="webscript.com.alvexcore.registers.api.RegistryItem.get" 
+          class="com.alvexcore.repo.registers.api.RegistryItem" 
+          parent="AbstractRegistryWebScript"/>
+
+    <bean id="webscript.com.alvexcore.registers.api.RegistryItemsById.get" 
+          class="com.alvexcore.repo.registers.api.RegistryItemsById" 
+          parent="AbstractRegistryWebScript"/>
+
+    <bean id="webscript.com.alvexcore.registers.api.TypeDescription.get" 
+          class="com.alvexcore.repo.registers.api.TypeDescription" 
+          parent="AbstractRegistryWebScript"/>
+
+</beans>

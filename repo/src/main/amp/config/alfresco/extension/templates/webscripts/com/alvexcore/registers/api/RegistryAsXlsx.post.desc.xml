@@ -1,0 +1,10 @@
+<webscript>
+  <shortname>Get registry as XLSX</shortname>
+  <description>Get registry as XLSX</description>
+  <!-- TODO: change URL, recheck params -->
+  <url>/api/alvex/registers/datalist.xlsx</url>
+  <authentication>user</authentication>
+  <format default='json'>any</format>
+  <transaction>required</transaction>
+  <family>Alvex registers API</family>
+</webscript>

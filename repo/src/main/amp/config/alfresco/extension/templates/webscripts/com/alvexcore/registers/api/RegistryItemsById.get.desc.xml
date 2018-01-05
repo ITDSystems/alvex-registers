@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Get registry data by registry id</shortname>
+  <description>Get registry data by registry id</description>
+  <url>/api/alvex/registers/{id}/items</url>
+  <authentication>user</authentication>
+  <format default='json'>any</format>
+  <family>Alvex registers API</family>
+</webscript>

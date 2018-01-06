@@ -1,0 +1,6 @@
+<webscript>
+    <shortname>Alvex Registers: Columns configuration</shortname>
+    <description>Alvex Registers: Columns configuration webscript</description>
+    <url>/com/alvexcore/registers/config/columns</url>
+    <format default="json"></format>
+</webscript>

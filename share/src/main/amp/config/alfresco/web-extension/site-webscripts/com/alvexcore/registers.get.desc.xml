@@ -1,0 +1,6 @@
+<webscript>
+  <shortname>Registers</shortname>
+  <description>This provides document registers.</description>
+  <family>alvex-share-pages</family>
+  <url>/registers</url>
+</webscript>

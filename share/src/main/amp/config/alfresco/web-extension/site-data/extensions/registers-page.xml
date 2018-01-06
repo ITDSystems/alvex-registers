@@ -1,0 +1,16 @@
+<extension>
+  <modules>
+    <module>
+      <id>Registers Page</id>
+      <auto-deploy>true</auto-deploy>
+      <evaluator type="default.extensibility.evaluator"/>
+      <configurations>
+         <config evaluator="string-compare" condition="SitePages" replace="false">
+            <pages>
+               <page id="registers">dp/ws/registers</page>
+            </pages>
+         </config>
+      </configurations>
+    </module>
+  </modules>
+</extension>

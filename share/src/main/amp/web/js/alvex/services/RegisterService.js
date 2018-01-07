@@ -609,11 +609,10 @@ define(["dojo/_base/declare",
         });
         if (originalRequestConfig.data.node.permissions == null || originalRequestConfig.data.node.permissions.user.Delete == true) {
           widgets[0].config.widgets.push({
-            name: "alfresco/documentlibrary/AlfSelectedItemsMenuBarPopup",
+            name: "alvex/lists/SelectedItemsMenuBarPopup",
             config: {
-              passive: true,
+              passive: false,
               itemKeyProperty: "nodeRef",
-              pubSubScope: "ALVEX_REGISTER_",
               label: "registers.menu.selected",
               widgets: [{
                 name: "alfresco/menus/AlfMenuGroup",

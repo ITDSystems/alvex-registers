@@ -41,6 +41,117 @@ define(["dojo/_base/declare",
         this.alfSubscribe("ALVEX_REGISTERS_NAVIGATE_TO_PAGE_AND_SAVE_HASH", lang.hitch(this, this.onNavigateToPageAndSaveHash));
       },
 
+      defaultDataTypeMappings: {
+        "datetime": {
+          name: "alfresco/renderers/Date",
+          config: {
+            simple: true,
+            format: "dd.mm.yyyy"
+          }
+        },
+        "date": {
+          name: "alfresco/renderers/Date",
+          config: {
+            simple: true,
+            format: "dd.mm.yyyy"
+          }
+        },
+        "cm:content": {
+          name: "alfresco/lists/AlfList",
+          config: {
+            style: {
+              overflow: "hidden"
+            },
+            waitForPageWidgets: false,
+            pubSubScope: "ALF_CONTENT_INFO_",
+            noDataMessage: " ",
+            widgets: [{
+              name: "alfresco/lists/views/AlfListView",
+              config: {
+                widgets: [{
+                  name: "alfresco/lists/views/layouts/Row",
+                  config: {
+                    widgets: [{
+                        name: "alfresco/lists/views/layouts/Cell",
+                        config: {
+                          width: "20px",
+                          widgets: [{
+                            name: "alfresco/renderers/SmallThumbnail",
+                            config: {
+                              itemKey: "nodeRef",
+                              assumeRendition: true,
+                              showDocumentPreview: true,
+                              usePreviewService: true
+                            }
+                          }]
+                        }
+                      },
+                      {
+                        name: "alfresco/lists/views/layouts/Cell",
+                        config: {
+                          widgets: [{
+                            name: "gost/renderers/Property",
+                            config: {
+                              propertyToRender: "value"
+                            }
+                          }]
+                        }
+                      }
+                    ]
+                  }
+                }]
+              }
+            }]
+          }
+        }
+      },
+      defaultTypeMappings: {
+        "association": {
+          name: "alfresco/lists/AlfList",
+          config: {
+            style: {
+              overflow: "hidden"
+            },
+            waitForPageWidgets: false,
+            pubSubScope: "ALF_ASSOC_INFO_",
+            noDataMessage: " ",
+            widgets: [{
+              name: "alfresco/lists/views/AlfListView",
+              config: {
+                widgets: [{
+                  name: "alfresco/lists/views/layouts/Row",
+                  config: {
+                    widgets: [{
+                      name: "alfresco/lists/views/layouts/Cell",
+                      config: {
+                        additionalCssClasses: "nopadding",
+                        widgets: [{
+                          name: "alfresco/renderers/PropertyLink",
+                          config: {
+                            propertyToRender: "value",
+                            publishTopic: "ALF_NAVIGATE_TO_PAGE",
+                            publishPayloadType: "PROCESS",
+                            useCurrentItemAsPayload: false,
+                            publishPayloadModifiers: ["processCurrentItemTokens"],
+                            publishPayload: {
+                              url: "/dp/ws/record#nodeRef={nodeRef}&form=view",
+                              type: "SHARE_PAGE_RELATIVE",
+                              target: "CURRENT"
+                            },
+                            publishGlobal: true,
+                            renderOnNewLine: true
+                          }
+                        }]
+                      }
+                    }]
+                  }
+                }]
+              }
+            }]
+          }
+        }
+      },
+
       userColumnConfiguration: "",
 
       onDeleteRegisterRequest: function alvex_services_RegisterService__onDeleteRegisterRequest(payload) {

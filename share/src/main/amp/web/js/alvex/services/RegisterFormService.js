@@ -23,15 +23,12 @@ define(["dojo/_base/declare",
       constructor: function alvex_services_RegisterFormService__constructor(args) {
         lang.mixin(this, args);
         this.alfSubscribe("CREATE_REGISTER_ITEM_FORM", lang.hitch(this, this.onCreateRegisterItemForm));
-        this.alfSubscribe("EDIT_REGISTER_ITEM_FORM", lang.hitch(this, this.onEditRegisterItemForm));
-        this.alfSubscribe("REQUEST_DATA_FROM_REPO", lang.hitch(this, this.onRequestDataFromRepo));
+      //  this.alfSubscribe("EDIT_REGISTER_ITEM_FORM", lang.hitch(this, this.onEditRegisterItemForm));
         this.alfSubscribe("SAVE_CREATE_FORM", lang.hitch(this, this.onSaveCreateForm));
-        this.alfSubscribe("SAVE_RESPONSIBLE_ASSIGNEE", lang.hitch(this, this.onSaveResponsibleAssignee));
         this.alfSubscribe("SAVE_EDIT_FORM", lang.hitch(this, this.onSaveEditForm));
-        this.alfSubscribe("REFRESH_DATALIST", lang.hitch(this, this.refreshRequest));
-        this.alfSubscribe("RETRIEVE_REGISTER_DATA", lang.hitch(this, this.onRetrieveRegisterDataForSelect));
-        this.alfSubscribe("UPLOAD_CHILD_FILES", lang.hitch(this, this.onUploadChildFiles));
-        this.alfSubscribe("CLOSE_CREATE_FORM", lang.hitch(this, this.onCloseCreateForm));
+      //  this.alfSubscribe("REFRESH_DATALIST", lang.hitch(this, this.refreshRequest));
+      //  this.alfSubscribe("UPLOAD_CHILD_FILES", lang.hitch(this, this.onUploadChildFiles));
+      //  this.alfSubscribe("CLOSE_CREATE_FORM", lang.hitch(this, this.onCloseCreateForm));
       },
 
       onCreateRegisterItemForm: function alvex_services_RegisterFormService__onCreateRegisterItemForm(payload) {

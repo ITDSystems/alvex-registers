@@ -1,6 +1,6 @@
 define(["dojo/_base/declare",
         "alfresco/menus/AlfMenuBarPopup",
-        "alvex/lists/SelectedItemStateMixin",
+        "alvex/registers/SelectedItemStateMixin",
         "alfresco/core/ObjectProcessingMixin",
         "alfresco/documentlibrary/_AlfDocumentListTopicMixin",
         "alfresco/core/topics",
@@ -17,7 +17,7 @@ define(["dojo/_base/declare",
 
       processActionPayloads: false,
 
-      postCreate: function alvex_lists_SelectedItemsMenuBarPopup__postCreate() {
+      postCreate: function alvex_registers_SelectedItemsMenuBarPopup__postCreate() {
          if (this.passive === true)
          {
             this.alfSubscribe(this.selectedDocumentsChangeTopic, lang.hitch(this, this.onFilesSelected));
@@ -31,12 +31,12 @@ define(["dojo/_base/declare",
          this.inherited(arguments);
       },
 
-      onFilesSelected: function alvex_lists_SelectedItemsMenuBarPopup__onFilesSelected(payload) {
+      onFilesSelected: function alvex_registers_SelectedItemsMenuBarPopup__onFilesSelected(payload) {
          this.set("disabled", (payload && payload.selectedItems && payload.selectedItems.length === 0));
          this.selectedItems = payload.selectedItems;
       },
 
-      onSelectedDocumentsAction: function alvex_lists_SelectedItemsMenuBarPopup__onSelectedDocumentsAction(payload) {
+      onSelectedDocumentsAction: function alvex_registers_SelectedItemsMenuBarPopup__onSelectedDocumentsAction(payload) {
          payload.documents = this.selectedItems;
          if (this.processActionPayloads)
          {

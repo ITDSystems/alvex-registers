@@ -39,6 +39,8 @@ define(["dojo/_base/declare",
         this.alfSubscribe("ALVEX_REGISTER_SAVE_COLUMNS_CONFIG", lang.hitch(this, this.onSaveColumnsConfig));
         this.alfSubscribe("ALVEX_REGISTER_SET_FILTERS_HASH_EMPTY", lang.hitch(this, this.onSetFiltersHashEmpty));
         this.alfSubscribe("ALVEX_REGISTERS_NAVIGATE_TO_PAGE_AND_SAVE_HASH", lang.hitch(this, this.onNavigateToPageAndSaveHash));
+      /*  this.alfSubscribe("ALVEX_REGISTER_VIEW_RECORD_VERSIONS", lang.hitch(this, this.onViewRecordVersions));
+        this.alfSubscribe("ALVEX_REGISTER_REVERT_RECORD_VERSION", lang.hitch(this, this.onRevertRecordVersion));*/
       },
 
       defaultDataTypeMappings: {
@@ -134,7 +136,7 @@ define(["dojo/_base/declare",
                             useCurrentItemAsPayload: false,
                             publishPayloadModifiers: ["processCurrentItemTokens"],
                             publishPayload: {
-                              url: "/dp/ws/record#nodeRef={nodeRef}&form=view",
+                              url: "/dp/ws/register-item#nodeRef={nodeRef}&form=view",
                               type: "SHARE_PAGE_RELATIVE",
                               target: "CURRENT"
                             },
@@ -609,7 +611,7 @@ define(["dojo/_base/declare",
         });
         if (originalRequestConfig.data.node.permissions == null || originalRequestConfig.data.node.permissions.user.Delete == true) {
           widgets[0].config.widgets.push({
-            name: "alvex/lists/SelectedItemsMenuBarPopup",
+            name: "alvex/registers/SelectedItemsMenuBarPopup",
             config: {
               passive: false,
               itemKeyProperty: "nodeRef",
@@ -646,7 +648,7 @@ define(["dojo/_base/declare",
           });
         } else {
           widgets[0].config.widgets.push({
-            name: "alfresco/documentlibrary/AlfSelectedItemsMenuBarPopup",
+            name: "alvex/registers/SelectedItemsMenuBarPopup",
             config: {
               passive: true,
               itemKeyProperty: "nodeRef",
@@ -866,7 +868,7 @@ define(["dojo/_base/declare",
                   publishPayloadType: "PROCESS",
                   publishPayloadModifiers: ["processCurrentItemTokens"],
                   publishPayload: {
-                    url: "/dp/ws/record#nodeRef={nodeRef}&form=view",
+                    url: "/dp/ws/register-item#nodeRef={nodeRef}&form=view",
                     type: "SHARE_PAGE_RELATIVE",
                     target: "CURRENT"
                   },
@@ -882,7 +884,7 @@ define(["dojo/_base/declare",
                   publishPayloadType: "PROCESS",
                   publishPayloadModifiers: ["processCurrentItemTokens"],
                   publishPayload: {
-                    url: "/dp/ws/record#nodeRef={nodeRef}&form=edit",
+                    url: "/dp/ws/register-item#nodeRef={nodeRef}&form=edit",
                     type: "SHARE_PAGE_RELATIVE",
                     target: "CURRENT"
                   },

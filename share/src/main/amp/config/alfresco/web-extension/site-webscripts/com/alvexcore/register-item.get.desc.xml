@@ -1,0 +1,6 @@
+<webscript>
+  <shortname>Register item page</shortname>
+  <family>Gost</family>
+  <url>/register-item</url>
+  <authentication>user</authentication>
+</webscript>

@@ -7,6 +7,7 @@
 		<property name="resourceBundles">
 			<list>
 				<value>alfresco.web-extension.messages.alvex-registers</value>
+				<value>alfresco.web-extension.messages.alvex-registers-form-messages</value>
 			</list>
 		</property>
 	</bean>

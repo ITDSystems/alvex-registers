@@ -7,6 +7,9 @@
           <show id="alvexreg:invoiceSummary"/>
           <show id="alvexreg:invoiceDate"/>
         </field-visibility>
+        <appearance>
+          <field id="alvexreg :id" isSortKey="true"/>
+        </appearance>
       </form>
       <form>
         <field-visibility>
@@ -41,10 +44,27 @@
           <show id="alvexreg:invoiceIsPaid"/>
           <show id="alvexreg:invoiceContractor"/>
           <show id="alvexreg:invoiceExpiryDate"/>
-          <show id="alvexreg:invoiceLinkedDocuments"/>
           <show id="alvexreg:invoiceDocumentManager"/>
+          <show id="alvexreg:invoiceLinkedDocuments"/>
         </field-visibility>
-      </form>
-    </forms>
-  </config>
-</alfresco-config>
+        <appearance>
+          <set id="id" appearance="title" label-id="set.label.id"/>
+          <field set="id" id="alvexreg:id"/>
+          <field set="id" id="alvexreg:registerDate"/>
+          <set id="invoice" appearance="title" label-id="set.label.invoice"/>
+          <field set="invoice" id="alvexreg:invoiceSummary"/>
+          <field set="invoice" id="alvexreg:invoiceDate"/>
+          <field set="invoice" id="alvexreg:invoicePaymentDate"/>
+          <field set="invoice" id="alvexreg:invoiceAmount"/>
+          <field set="invoice" id="alvexreg:invoiceCurrency"/>
+          <field set="invoice" id="alvexreg:invoiceIsPaid"/>
+          <field set="invoice" id="alvexreg:invoiceContractor"/>
+          <field set="invoice" id="alvexreg:invoiceExpiryDate"/>
+          <field set="invoice" id="alvexreg:invoiceDocumentManager"/>
+          <set id="links" appearance="title" label-id="set.label.links"/>
+          <field set="links" id="alvexreg:invoiceLinkedDocuments"/>
+        </appearance>
+        </form>
+      </forms>
+    </config>
+  </alfresco-config>

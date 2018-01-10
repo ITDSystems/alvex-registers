@@ -8,8 +8,14 @@ headerServices.push({
     id: "LIGHTBOX_SERVICE",
     name: "alfresco/services/LightboxService"
 }, {
-    id: "REGISTER_FORMS_RUNTIME_SERVICE",
-    name: "alvex/services/RegisterFormsRuntimeService"
+  id: "REGISTER_FORMS_RUNTIME_SERVICE",
+  name: "alvex/services/RegisterFormsRuntimeService"
+}, {
+  id: "FILE_UPLOAD_SERVICE",
+  name: "alvex/services/FileUploadService"
+}, {
+  id: "CONTENT_SERVICE",
+  name: "alfresco/services/ContentService"
 }, {
     id: "CRUD_SERVICE",
     name: "alfresco/services/CrudService"

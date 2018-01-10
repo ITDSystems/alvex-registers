@@ -57,7 +57,7 @@ define(["dojo/_base/declare",
           config = {
             formConfig: {
               useDialog: false,
-              formId: "NEW_DATA_LIST_ITEM_DIALOG",
+              formId: "EDIT_REGISTER_ITEM_DIALOG",
               formSubmissionPayloadMixin: {
                 responseScope: "ALF_FORM_"
               }

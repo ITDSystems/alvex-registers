@@ -36,6 +36,14 @@ function getRegistersServices() {
       name: "alvex/services/RegisterFormsRuntimeService"
     },
     {
+      id: "FILE_UPLOAD_SERVICE",
+      name: "alvex/services/FileUploadService"
+    },
+    {
+      id: "CONTENT_SERVICE",
+      name: "alfresco/services/ContentService"
+    },
+    {
       id: "REGISTER_FORM_SERVICE",
       name: "alvex/services/RegisterFormService"
     },

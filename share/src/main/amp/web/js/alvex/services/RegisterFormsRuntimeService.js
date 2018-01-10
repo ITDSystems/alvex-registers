@@ -40,7 +40,7 @@ function(declare, topics, $, FormsRuntimeService) {
         },
         registerSubscriptions: function alvex_services_RegisterFormsRuntimeService__registerSubscriptions() {
             this.inherited(arguments);
-            this.controlMappings = $.extend({}, this.controlMappings, this.registerControlMappings);
+            this.controlMappings = $.extend(true, this.controlMappings, this.registerControlMappings);
         }
     });
 });

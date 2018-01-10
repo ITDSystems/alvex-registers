@@ -33,7 +33,7 @@ function getRegistersServices() {
     },
     {
       id: "FORMS_RUNTIME_SERVICE",
-      name: "alvex/services/FormsRuntimeService"
+      name: "alvex/services/RegisterFormsRuntimeService"
     },
     {
       id: "REGISTER_FORM_SERVICE",

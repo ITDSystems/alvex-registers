@@ -60,7 +60,9 @@
           <field set="invoice" id="alvexreg:invoiceIsPaid"/>
           <field set="invoice" id="alvexreg:invoiceContractor"/>
           <field set="invoice" id="alvexreg:invoiceExpiryDate"/>
-          <field set="invoice" id="alvexreg:invoiceDocumentManager"/>
+          <field set="invoice" id="alvexreg:invoiceDocumentManager">
+            <control template="/com/alvexcore/components/form/controls/authority.ftl"/>
+          </field>
           <set id="links" appearance="title" label-id="set.label.links"/>
           <field set="links" id="alvexreg:invoiceLinkedDocuments"/>
         </appearance>

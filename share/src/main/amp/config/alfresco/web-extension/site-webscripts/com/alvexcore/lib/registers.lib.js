@@ -32,7 +32,7 @@ function getRegistersServices() {
       name: "alfresco/services/DocumentService"
     },
     {
-      id: "FORMS_RUNTIME_SERVICE",
+      id: "REGISTER_FORMS_RUNTIME_SERVICE",
       name: "alvex/services/RegisterFormsRuntimeService"
     },
     {

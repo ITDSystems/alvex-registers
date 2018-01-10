@@ -777,7 +777,7 @@ define(["dojo/_base/declare",
               } else {
                 data = {
                   config: {
-                    propertyToRender: column.name
+                    propertyToRender: "properties." + column.name
                   }
                 };
               }

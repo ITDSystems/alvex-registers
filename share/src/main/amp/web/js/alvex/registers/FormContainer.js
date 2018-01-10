@@ -281,21 +281,23 @@ define(["dojo/_base/declare",
                         }
                     });
                 }
-                MenuBar[1].config.widgets.push({
-                    name: "alfresco/menus/AlfMenuBarItem",
-                    config: {
-                        id: "BACK",
-                        iconClass: "alf-back-icon",
-                        label: "register-item.menu.back",
-                        publishTopic: "ALF_NAVIGATE_TO_PAGE",
-                        publishPayloadType: "PROCESS",
-                        publishPayload: {
-                            url: "/site/" + siteUrl + "/dp/ws/registers#list=" + parent + urlExt,
-                            type: "SHARE_PAGE_RELATIVE",
-                            target: "CURRENT"
-                        }
-                    }
-                });
+                if (response.response.item.node.location.site) {
+                  MenuBar[1].config.widgets.push({
+                      name: "alfresco/menus/AlfMenuBarItem",
+                      config: {
+                          id: "BACK",
+                          iconClass: "alf-back-icon",
+                          label: "register-item.menu.back",
+                          publishTopic: "ALF_NAVIGATE_TO_PAGE",
+                          publishPayloadType: "PROCESS",
+                          publishPayload: {
+                              url: "/site/" + siteUrl + "/dp/ws/registers#list=" + parent + urlExt,
+                              type: "SHARE_PAGE_RELATIVE",
+                              target: "CURRENT"
+                          }
+                      }
+                  });
+                }
                 this.alfPublish("RIGHT_MENU_LINKS", {
                     widgets: MenuBar
                 });

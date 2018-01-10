@@ -115,9 +115,47 @@ define(["dojo/_base/declare",
       },
       defaultTypeMappings: {
         "association": {
-          name: "alvex/renderers/RegisterItemLink",
+          name: "alfresco/lists/AlfList",
           config: {
-            isDatagridPage: true
+            style: {
+              overflow: "hidden"
+            },
+            waitForPageWidgets: false,
+            pubSubScope: "ALF_ASSOC_INFO_",
+            noDataMessage: " ",
+            widgets: [{
+              name: "alfresco/lists/views/AlfListView",
+              config: {
+                widgets: [{
+                  name: "alfresco/lists/views/layouts/Row",
+                  config: {
+                    widgets: [{
+                      name: "alfresco/lists/views/layouts/Cell",
+                      config: {
+                        additionalCssClasses: "nopadding",
+                        widgets: [{
+                          name: "alfresco/renderers/PropertyLink",
+                          config: {
+                            propertyToRender: "value",
+                            publishTopic: "ALF_NAVIGATE_TO_PAGE",
+                            publishPayloadType: "PROCESS",
+                            useCurrentItemAsPayload: false,
+                            publishPayloadModifiers: ["processCurrentItemTokens"],
+                            publishPayload: {
+                              url: "/dp/ws/register-item#nodeRef={nodeRef}&form=view",
+                              type: "SHARE_PAGE_RELATIVE",
+                              target: "CURRENT"
+                            },
+                            publishGlobal: true,
+                            renderOnNewLine: true
+                          }
+                        }]
+                      }
+                    }]
+                  }
+                }]
+              }
+            }]
           }
         }
       },

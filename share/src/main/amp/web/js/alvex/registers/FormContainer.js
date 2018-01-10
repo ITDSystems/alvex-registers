@@ -281,7 +281,7 @@ define(["dojo/_base/declare",
                         }
                     });
                 }
-                if (response.response.item.node.location.site) {
+                if (response.response.item.location.site) {
                   MenuBar[1].config.widgets.push({
                       name: "alfresco/menus/AlfMenuBarItem",
                       config: {

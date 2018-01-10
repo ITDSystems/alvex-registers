@@ -16,7 +16,8 @@ define(["dojo/_base/declare",
     "alfresco/lists/views/layouts/Cell",
     "alfresco/lists/views/layouts/HeaderCell",
     "alfresco/renderers/Date",
-    "alfresco/renderers/Property"
+    "alfresco/renderers/Property",
+    "alvex/renderers/RegisterItemLink"
   ],
   function(declare, BaseService, CoreXhr, NodeUtils, topics, array, lang, AlfConstants, $, hashUtils) {
 
@@ -39,8 +40,8 @@ define(["dojo/_base/declare",
         this.alfSubscribe("ALVEX_REGISTER_SAVE_COLUMNS_CONFIG", lang.hitch(this, this.onSaveColumnsConfig));
         this.alfSubscribe("ALVEX_REGISTER_SET_FILTERS_HASH_EMPTY", lang.hitch(this, this.onSetFiltersHashEmpty));
         this.alfSubscribe("ALVEX_REGISTERS_NAVIGATE_TO_PAGE_AND_SAVE_HASH", lang.hitch(this, this.onNavigateToPageAndSaveHash));
-      /*  this.alfSubscribe("ALVEX_REGISTER_VIEW_RECORD_VERSIONS", lang.hitch(this, this.onViewRecordVersions));
-        this.alfSubscribe("ALVEX_REGISTER_REVERT_RECORD_VERSION", lang.hitch(this, this.onRevertRecordVersion));*/
+        /*  this.alfSubscribe("ALVEX_REGISTER_VIEW_RECORD_VERSIONS", lang.hitch(this, this.onViewRecordVersions));
+          this.alfSubscribe("ALVEX_REGISTER_REVERT_RECORD_VERSION", lang.hitch(this, this.onRevertRecordVersion));*/
       },
 
       defaultDataTypeMappings: {
@@ -80,6 +81,11 @@ define(["dojo/_base/declare",
                           widgets: [{
                             name: "alfresco/renderers/SmallThumbnail",
                             config: {
+                              dimensions: {
+                                w: "15px",
+                                h: "15px",
+                                margins: "2px"
+                              },
                               itemKey: "nodeRef",
                               assumeRendition: true,
                               showDocumentPreview: true,
@@ -92,7 +98,7 @@ define(["dojo/_base/declare",
                         name: "alfresco/lists/views/layouts/Cell",
                         config: {
                           widgets: [{
-                            name: "gost/renderers/Property",
+                            name: "alfresco/renderers/Property",
                             config: {
                               propertyToRender: "value"
                             }
@@ -109,47 +115,9 @@ define(["dojo/_base/declare",
       },
       defaultTypeMappings: {
         "association": {
-          name: "alfresco/lists/AlfList",
+          name: "alvex/renderers/RegisterItemLink",
           config: {
-            style: {
-              overflow: "hidden"
-            },
-            waitForPageWidgets: false,
-            pubSubScope: "ALF_ASSOC_INFO_",
-            noDataMessage: " ",
-            widgets: [{
-              name: "alfresco/lists/views/AlfListView",
-              config: {
-                widgets: [{
-                  name: "alfresco/lists/views/layouts/Row",
-                  config: {
-                    widgets: [{
-                      name: "alfresco/lists/views/layouts/Cell",
-                      config: {
-                        additionalCssClasses: "nopadding",
-                        widgets: [{
-                          name: "alfresco/renderers/PropertyLink",
-                          config: {
-                            propertyToRender: "value",
-                            publishTopic: "ALF_NAVIGATE_TO_PAGE",
-                            publishPayloadType: "PROCESS",
-                            useCurrentItemAsPayload: false,
-                            publishPayloadModifiers: ["processCurrentItemTokens"],
-                            publishPayload: {
-                              url: "/dp/ws/register-item#nodeRef={nodeRef}&form=view",
-                              type: "SHARE_PAGE_RELATIVE",
-                              target: "CURRENT"
-                            },
-                            publishGlobal: true,
-                            renderOnNewLine: true
-                          }
-                        }]
-                      }
-                    }]
-                  }
-                }]
-              }
-            }]
+            isDatagridPage: true
           }
         }
       },
@@ -809,7 +777,7 @@ define(["dojo/_base/declare",
               } else {
                 data = {
                   config: {
-                    propertyToRender: "properties." + column.name
+                    propertyToRender: column.name
                   }
                 };
               }

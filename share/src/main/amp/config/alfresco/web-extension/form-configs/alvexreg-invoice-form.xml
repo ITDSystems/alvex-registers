@@ -23,6 +23,7 @@
           <show id="alvexreg:invoiceIsPaid"/>
           <show id="alvexreg:invoiceContractor"/>
           <show id="alvexreg:invoiceExpiryDate"/>
+          <show id="alvexreg:files"/>
           <show id="alvexreg:invoiceLinkedDocuments"/>
           <show id="alvexreg:invoiceDocumentManager"/>
         </field-visibility>
@@ -45,6 +46,7 @@
           <show id="alvexreg:invoiceContractor"/>
           <show id="alvexreg:invoiceExpiryDate"/>
           <show id="alvexreg:invoiceDocumentManager"/>
+          <show id="alvexreg:files"/>
           <show id="alvexreg:invoiceLinkedDocuments"/>
         </field-visibility>
         <appearance>
@@ -63,6 +65,7 @@
           <field set="invoice" id="alvexreg:invoiceDocumentManager">
             <control template="/com/alvexcore/components/form/controls/authority.ftl"/>
           </field>
+          <field set="invoice" id="alvexreg:files"/>
           <set id="links" appearance="title" label-id="set.label.links"/>
           <field set="links" id="alvexreg:invoiceLinkedDocuments"/>
         </appearance>

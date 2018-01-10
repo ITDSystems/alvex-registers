@@ -41,7 +41,10 @@ define(["dojo/_base/declare",
         this.itemsToShow = [];
         this.alfSubscribe(this.subscriptionTopic, lang.hitch(this, this.render), true);
         var data = [];
-        if (this.isArray) {
+        if (this.isDatagridPage) {
+          var propToRender = this.currentItemPropertyForDataItems.slice(0, this.currentItemPropertyForDataItems.lastIndexOf(".")) + ".value";
+          data = lang.getObject(propToRender, false, this.currentItem).split(",");
+        } else if (this.isArray) {
           data = lang.getObject(this.propertyToRender, false, this.currentItem);
 
         } else if (ObjectTypeUtils.isString(this.propertyToRender) &&
@@ -113,72 +116,48 @@ define(["dojo/_base/declare",
       },
 
       getRenderedProperty: function alvex_renderers_RegisterItemLink__getRenderedProperty(property, highlight) {
-         /*jshint maxcomplexity:false*/
-         var value = "";
-         if (property === null || typeof property === "undefined")
-         {
-            // No action required if a property isn't supplied
-         }
-         else if (ObjectTypeUtils.isString(property))
-         {
-            value = this.encodeHTML(property);
-         }
-         else if (ObjectTypeUtils.isArray(property))
-         {
-            value = property.length;
-         }
-         else if (ObjectTypeUtils.isBoolean(property))
-         {
-            value = property;
-         }
-         else if (ObjectTypeUtils.isNumber(property))
-         {
-            value = property;
-         }
-         else if (ObjectTypeUtils.isObject(property))
-         {
-            // TODO: This should probably be moved out into a Node specific sub-class
-            if (property.hasOwnProperty("iso8601"))
-            {
-               value = this.renderDate(property.iso8601);
-            }
-            else if (property.hasOwnProperty("userName") && property.hasOwnProperty("displayName"))
-            {
-               value = this.userProfileLink(property.userName, property.displayName);
-            }
-            else if (property.hasOwnProperty("displayName"))
-            {
-               value = this.encodeHTML(property.displayName || "");
-            }
-            else if (property.hasOwnProperty("title"))
-            {
-               value = this.encodeHTML(property.title || "");
-            }
-            else if (property.hasOwnProperty("name"))
-            {
-               value = this.encodeHTML(property.name || "");
-            }
-         }
+        /*jshint maxcomplexity:false*/
+        var value = "";
+        if (property === null || typeof property === "undefined") {
+          // No action required if a property isn't supplied
+        } else if (ObjectTypeUtils.isString(property)) {
+          value = this.encodeHTML(property);
+        } else if (ObjectTypeUtils.isArray(property)) {
+          value = property.length;
+        } else if (ObjectTypeUtils.isBoolean(property)) {
+          value = property;
+        } else if (ObjectTypeUtils.isNumber(property)) {
+          value = property;
+        } else if (ObjectTypeUtils.isObject(property)) {
+          // TODO: This should probably be moved out into a Node specific sub-class
+          if (property.hasOwnProperty("iso8601")) {
+            value = this.renderDate(property.iso8601);
+          } else if (property.hasOwnProperty("userName") && property.hasOwnProperty("displayName")) {
+            value = this.userProfileLink(property.userName, property.displayName);
+          } else if (property.hasOwnProperty("displayName")) {
+            value = this.encodeHTML(property.displayName || "");
+          } else if (property.hasOwnProperty("title")) {
+            value = this.encodeHTML(property.title || "");
+          } else if (property.hasOwnProperty("name")) {
+            value = this.encodeHTML(property.name || "");
+          }
+        }
 
-         if (value && highlight)
-         {
-            value = this.addHighlightMarks(value, highlight);
-         }
-         else if (value && this.highlightPrefix && this.highlightPostfix)
-         {
-            value = value.replace(new RegExp(this.highlightPrefix, "g"), "<mark>").replace(new RegExp(this.highlightPostfix, "g"), "</mark>");
-         }
+        if (value && highlight) {
+          value = this.addHighlightMarks(value, highlight);
+        } else if (value && this.highlightPrefix && this.highlightPostfix) {
+          value = value.replace(new RegExp(this.highlightPrefix, "g"), "<mark>").replace(new RegExp(this.highlightPostfix, "g"), "</mark>");
+        }
 
-         if (value && this.trimValue && typeof value.trim === "function")
-         {
-            value = value.replace(/ /g, " ").trim();
-         }
+        if (value && this.trimValue && typeof value.trim === "function") {
+          value = value.replace(/ /g, " ").trim();
+        }
 
-         return value;
+        return value;
       },
 
       updateSelectedFiles: function alvex_renderers_RegisterItemLink__updateSelectedFiles(topic) {
-        var widgetsForView = lang.clone(this.widgetsForView);
+        var widgetsForView = (this.isDatagridPage) ? lang.clone(this.widgetsForDatagridView) : lang.clone(this.widgetsForView);
         this.processObject(["processInstanceTokens"], widgetsForView);
         this.alfPublish(topic, {
           widgets: widgetsForView
@@ -220,6 +199,51 @@ define(["dojo/_base/declare",
             }
           }]
         }
-      }]
+      }],
+
+      widgetsForDatagridView: [{
+                id: "{id}_LINKS_LIST",
+                name: "alfresco/lists/views/AlfListView",
+                config: {
+                    noItemsMessage: " ",
+                    currentData: {
+                        items: "{itemsToShow}"
+                    },
+                    widgets:[
+                        {
+                            name: "alfresco/lists/views/layouts/Row",
+                            config: {
+                                widgetModelModifiers: ["processCurrentItemTokens"],
+                                widgets: [
+                                    {
+                                        name: "alfresco/lists/views/layouts/Cell",
+                                        config: {
+                                            widgets: [
+                                                {
+                                                    id: "{id}_SELECTED_FILES_NAME",
+                                                    name: "alfresco/renderers/Link",
+                                                    config: {
+                                                        linkLabel: "{registerRenderName}",
+                                                        publishTopic: "ALF_NAVIGATE_TO_PAGE",
+                                                        publishPayloadType: "PROCESS",
+                                                        useCurrentItemAsPayload: false,
+                                                        publishGlobal: true,
+                                                        publishPayloadModifiers: ["processCurrentItemTokens"],
+                                                        publishPayload: {
+                                                            url: "/dp/ws/register-item#nodeRef={nodeRef}&form=view",
+                                                            type: "SHARE_PAGE_RELATIVE",
+                                                            target: "CURRENT"
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }]
     });
   });

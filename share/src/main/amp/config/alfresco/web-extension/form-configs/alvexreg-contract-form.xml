@@ -1,0 +1,70 @@
+<alfresco-config>
+  <config evaluator="model-type" condition="alvexreg:contract">
+    <forms>
+      <form id="datagrid">
+        <field-visibility>
+          <show id="alvexreg:id"/>
+          <show id="alvexreg:contractDate"/>
+          <show id="alvexreg:contractSummary"/>
+          <show id="alvexreg:contractContractor"/>
+          <show id="alvexreg:contractStatus"/>
+        </field-visibility>
+        <appearance>
+          <field id="alvexreg:id" isSortKey="true"/>
+        </appearance>
+      </form>
+      <form>
+        <field-visibility>
+          <show id="alvexreg:id"/>
+          <show id="alvexreg:contractDate"/>
+          <show id="alvexreg:contractSummary"/>
+          <show id="alvexreg:contractContractor"/>
+          <show id="alvexreg:contractStatus"/>
+          <show id="alvexreg:contractLocation"/>
+          <show id="alvexreg:contractDocumentManager"/>
+          <show id="alvexreg:contractSignatory"/>
+          <show id="alvexreg:files"/>
+          <!--show id="alvexreg:contractLinkedDocuments"/-->
+        </field-visibility>
+      </form>
+    </forms>
+  </config>
+
+  <config evaluator="node-type" condition="alvexreg:contract">
+    <forms>
+      <form>
+        <field-visibility>
+          <show id="alvexreg:id"/>
+          <show id="alvexreg:contractDate"/>
+          <show id="alvexreg:contractSummary"/>
+          <show id="alvexreg:contractContractor"/>
+          <show id="alvexreg:contractStatus"/>
+          <show id="alvexreg:contractLocation"/>
+          <show id="alvexreg:contractDocumentManager"/>
+          <show id="alvexreg:contractSignatory"/>
+          <show id="alvexreg:files"/>
+          <!--show id="alvexreg:contractLinkedDocuments"/-->
+        </field-visibility>
+        <appearance>
+          <set id="contract" appearance="title" label-id="set.label.primary"/>
+          <field set="contract" id="alvexreg:id"/>
+          <field set="contract" id="alvexreg:contractSummary"/>
+          <field set="contract" id="alvexreg:contractDate"/>
+          <field set="contract" id="alvexreg:contractPaymentDate"/>
+          <field set="contract" id="alvexreg:contractAmount"/>
+          <field set="contract" id="alvexreg:contractCurrency"/>
+          <field set="contract" id="alvexreg:contractIsPaid"/>
+          <field set="contract" id="alvexreg:contractContractor"/>
+          <field set="contract" id="alvexreg:contractExpiryDate"/>
+          <field set="contract" id="alvexreg:contractDocumentManager">
+            <control template="/alvex/controls/authority.ftl"/>
+          </field>
+          <set id="files" appearance="title" label-id="set.label.files"/>
+          <field set="files" id="alvexreg:files"/>
+          <!--set id="links" appearance="title" label-id="set.label.links"/>
+          <field set="links" id="alvexreg:contractLinkedDocuments"/-->
+        </appearance>
+        </form>
+      </forms>
+    </config>
+  </alfresco-config>

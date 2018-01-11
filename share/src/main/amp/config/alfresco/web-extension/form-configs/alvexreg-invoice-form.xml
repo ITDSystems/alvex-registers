@@ -6,15 +6,15 @@
           <show id="alvexreg:id"/>
           <show id="alvexreg:invoiceSummary"/>
           <show id="alvexreg:invoiceDate"/>
+          <show id="alvexreg:invoiceContractor"/>
         </field-visibility>
         <appearance>
-          <field id="alvexreg :id" isSortKey="true"/>
+          <field id="alvexreg:id" isSortKey="true"/>
         </appearance>
       </form>
       <form>
         <field-visibility>
           <show id="alvexreg:id"/>
-          <show id="alvexreg:registerDate"/>
           <show id="alvexreg:invoiceSummary"/>
           <show id="alvexreg:invoiceDate"/>
           <show id="alvexreg:invoicePaymentDate"/>
@@ -24,7 +24,7 @@
           <show id="alvexreg:invoiceContractor"/>
           <show id="alvexreg:invoiceExpiryDate"/>
           <show id="alvexreg:files"/>
-          <show id="alvexreg:invoiceLinkedDocuments"/>
+          <!--show id="alvexreg:invoiceLinkedDocuments"/-->
           <show id="alvexreg:invoiceDocumentManager"/>
         </field-visibility>
       </form>
@@ -36,7 +36,6 @@
       <form>
         <field-visibility>
           <show id="alvexreg:id"/>
-          <show id="alvexreg:registerDate"/>
           <show id="alvexreg:invoiceSummary"/>
           <show id="alvexreg:invoiceDate"/>
           <show id="alvexreg:invoicePaymentDate"/>
@@ -47,13 +46,11 @@
           <show id="alvexreg:invoiceExpiryDate"/>
           <show id="alvexreg:invoiceDocumentManager"/>
           <show id="alvexreg:files"/>
-          <show id="alvexreg:invoiceLinkedDocuments"/>
+          <!--show id="alvexreg:invoiceLinkedDocuments"/-->
         </field-visibility>
         <appearance>
-          <set id="id" appearance="title" label-id="set.label.id"/>
-          <field set="id" id="alvexreg:id"/>
-          <field set="id" id="alvexreg:registerDate"/>
-          <set id="invoice" appearance="title" label-id="set.label.invoice"/>
+          <set id="invoice" appearance="title" label-id="set.label.primary"/>
+          <field set="invoice" id="alvexreg:id"/>
           <field set="invoice" id="alvexreg:invoiceSummary"/>
           <field set="invoice" id="alvexreg:invoiceDate"/>
           <field set="invoice" id="alvexreg:invoicePaymentDate"/>
@@ -63,11 +60,12 @@
           <field set="invoice" id="alvexreg:invoiceContractor"/>
           <field set="invoice" id="alvexreg:invoiceExpiryDate"/>
           <field set="invoice" id="alvexreg:invoiceDocumentManager">
-            <control template="/com/alvexcore/components/form/controls/authority.ftl"/>
+            <control template="/alvex/controls/authority.ftl"/>
           </field>
-          <field set="invoice" id="alvexreg:files"/>
-          <set id="links" appearance="title" label-id="set.label.links"/>
-          <field set="links" id="alvexreg:invoiceLinkedDocuments"/>
+          <set id="files" appearance="title" label-id="set.label.files"/>
+          <field set="files" id="alvexreg:files"/>
+          <!--set id="links" appearance="title" label-id="set.label.links"/>
+          <field set="links" id="alvexreg:invoiceLinkedDocuments"/-->
         </appearance>
         </form>
       </forms>

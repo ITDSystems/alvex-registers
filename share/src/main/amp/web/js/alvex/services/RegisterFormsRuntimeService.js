@@ -10,8 +10,7 @@ function(declare, topics, $, FormsRuntimeService) {
         registerControlMappings:{
             node: {
                 edit: {
-                    // This will work only if alvex-registers installed
-                    "/com/alvexcore/components/form/controls/authority.ftl": {
+                    "/alvex/controls/authority.ftl": {
                         name: "alfresco/forms/controls/MultiSelectInput",
                         config: {
                             width: "400px",
@@ -30,7 +29,7 @@ function(declare, topics, $, FormsRuntimeService) {
                     }
                 },
                 view: {
-                    "/com/alvexcore/components/form/controls/authority.ftl": {
+                    "/alvex/controls/authority.ftl": {
                         name: "alvex/renderers/RegisterItemLink",
                         config: {
                         }

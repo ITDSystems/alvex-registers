@@ -404,7 +404,7 @@ define(["dojo/_base/declare",
             if (fields[i]["constraint"] !== null) {
               temp[fields[i]["name"]] = fields[i]["constraint"];
               temp[fields[i]["name"]].unshift({
-                label: this.message(registers.search.listconstraint.alloptions),
+                label: this.message("registers.search.listconstraint.alloptions"),
                 value: "all"
               });
             }

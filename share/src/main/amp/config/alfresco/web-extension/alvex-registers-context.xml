@@ -17,6 +17,7 @@
 		<property name="configs">
 			<list>
 				<value>classpath:alfresco/web-extension/form-configs/alvexreg-invoice-form.xml</value>
+				<value>classpath:alfresco/web-extension/form-configs/alvexreg-contract-form.xml</value>
 			</list>
 		</property>
 	</bean>

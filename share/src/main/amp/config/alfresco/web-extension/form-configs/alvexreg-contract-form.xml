@@ -48,15 +48,15 @@
         <appearance>
           <set id="contract" appearance="title" label-id="set.label.primary"/>
           <field set="contract" id="alvexreg:id"/>
-          <field set="contract" id="alvexreg:contractSummary"/>
           <field set="contract" id="alvexreg:contractDate"/>
-          <field set="contract" id="alvexreg:contractPaymentDate"/>
-          <field set="contract" id="alvexreg:contractAmount"/>
-          <field set="contract" id="alvexreg:contractCurrency"/>
-          <field set="contract" id="alvexreg:contractIsPaid"/>
+          <field set="contract" id="alvexreg:contractSummary"/>
           <field set="contract" id="alvexreg:contractContractor"/>
-          <field set="contract" id="alvexreg:contractExpiryDate"/>
+          <field set="contract" id="alvexreg:contractStatus"/>
+          <field set="contract" id="alvexreg:contractLocation"/>
           <field set="contract" id="alvexreg:contractDocumentManager">
+            <control template="/alvex/controls/authority.ftl"/>
+          </field>
+          <field set="contract" id="alvexreg:contractSignatory">
             <control template="/alvex/controls/authority.ftl"/>
           </field>
           <set id="files" appearance="title" label-id="set.label.files"/>

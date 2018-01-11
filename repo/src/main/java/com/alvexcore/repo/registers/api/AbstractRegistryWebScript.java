@@ -275,6 +275,7 @@ public abstract class AbstractRegistryWebScript extends AbstractWebScript implem
             QName type = nodeService.getType(itemRef);
             item.put("id", itemRef.getId());
             item.put("nodeRef", itemRef.toString());
+            item.put("displayName", getDisplayName(itemRef));
             item.put("type", type.toPrefixString(namespaceService));
             item.put("typeDisplayName", dictionaryService.getType(type).getTitle(messageService));
             item.put("properties", getPropertiesJSON(itemRef));
@@ -333,7 +334,7 @@ public abstract class AbstractRegistryWebScript extends AbstractWebScript implem
                         item = new JSONObject();
                         item.put("nodeRef", targetRef.toString());
                         item.put("type", nodeService.getType(targetRef).toPrefixString(namespaceService));
-                        item.put("value", getDisplayName(targetRef, assoc, itemRef));
+                        item.put("value", getDisplayName(targetRef));
                         values.put(item);
                     } catch (JSONException e) {
                         //
@@ -394,7 +395,7 @@ public abstract class AbstractRegistryWebScript extends AbstractWebScript implem
         }
     }
 
-    public String getDisplayName(NodeRef nodeRef, QName assocQName, NodeRef parentRef)
+    public String getDisplayName(NodeRef nodeRef)
     {
         DateTimeFormatter formatter = ISODateTimeFormat.date();
         QName nodeTypeQName = nodeService.getType(nodeRef);
@@ -404,6 +405,8 @@ public abstract class AbstractRegistryWebScript extends AbstractWebScript implem
         Map<String, String> model = new HashMap<>();
         for(QName key : props.keySet()) {
             Serializable value = props.get(key);
+            if(value == null)
+                continue;
             if(value instanceof Date) {
                 model.put(key.toPrefixString(namespaceService), formatter.print(((Date) value).getTime()));
             } else {

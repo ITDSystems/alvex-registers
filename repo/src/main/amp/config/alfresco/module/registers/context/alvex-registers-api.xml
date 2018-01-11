@@ -5,6 +5,9 @@
 
     <bean id='AbstractRegistryWebScript' abstract="true" parent='webscript'>
         <property name="serviceRegistry" ref="ServiceRegistry" />
+        <property name="dataSource">
+            <ref bean="dataSource" />
+        </property>
     </bean>
 
     <bean id="webscript.com.alvexcore.registers.api.ConstraintOptions.get" 

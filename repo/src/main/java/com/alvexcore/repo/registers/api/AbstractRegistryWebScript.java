@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.sql.DataSource;
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.dictionary.constraint.ListOfValuesConstraint;
@@ -47,9 +48,9 @@ import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
+import org.apache.commons.lang.text.StrSubstitutor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.ibatis.datasource.pooled.PooledDataSource;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.json.JSONArray;
@@ -61,6 +62,11 @@ import org.springframework.extensions.webscripts.AbstractWebScript;
 
 
 public abstract class AbstractRegistryWebScript extends AbstractWebScript implements InitializingBean{
+
+    public static final List<QName> SYSTEM_FIELDS = new ArrayList<>();
+    static {
+        SYSTEM_FIELDS.add(AlvexRegistersContentModel.PROP_ALVEX_REGISTER_ITEM_DISPLAY_NAME_CONFIG);
+    }
 
     protected ServiceRegistry serviceRegistry;
     protected WorkflowService workflowService;
@@ -77,13 +83,18 @@ public abstract class AbstractRegistryWebScript extends AbstractWebScript implem
     protected AuthorityService authorityService;
     protected PermissionService permissionService;
 
-    private PooledDataSource dbPool;
+    protected DataSource dataSource;
 
     private final Log logger = LogFactory.getLog(AbstractRegistryWebScript.class);
 
     @Required
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
         this.serviceRegistry = serviceRegistry;
+    }
+
+    @Required
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
     @Override
@@ -102,7 +113,7 @@ public abstract class AbstractRegistryWebScript extends AbstractWebScript implem
         authorityService = serviceRegistry.getAuthorityService();
         permissionService = serviceRegistry.getPermissionService();
 
-        Properties properties = new Properties();
+        /*Properties properties = new Properties();
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         InputStream inputStream = classLoader.getResourceAsStream("alfresco-global.properties");
         properties.load(inputStream);
@@ -112,7 +123,7 @@ public abstract class AbstractRegistryWebScript extends AbstractWebScript implem
                 properties.getProperty("db.password")
         );
         // TODO: add separate option to tune this
-        dbPool.setPoolMaximumActiveConnections(Integer.parseInt(properties.getProperty("db.pool.max")));
+        dbPool.setPoolMaximumActiveConnections(Integer.parseInt(properties.getProperty("db.pool.max")));*/
     }
 
     protected JSONObject getConstraintDescriptionJSON(QName constraintName)
@@ -144,6 +155,33 @@ public abstract class AbstractRegistryWebScript extends AbstractWebScript implem
         return resp;
     }
 
+    protected String getTypeDisplayNameConfig(QName typeName)
+    {
+        return getTypeDisplayNameConfig(dictionaryService.getType(typeName));
+    }
+
+    protected String getTypeDisplayNameConfig(TypeDefinition typeDef)
+    {
+        Map<String, String> defaultModel = new HashMap<>();
+        defaultModel.put("firstName", ContentModel.PROP_FIRSTNAME.toPrefixString(namespaceService));
+        defaultModel.put("lastName", ContentModel.PROP_LASTNAME.toPrefixString(namespaceService));
+        defaultModel.put("nodeTitle", ContentModel.PROP_TITLE.toPrefixString(namespaceService));
+        defaultModel.put("nodeName", ContentModel.PROP_NAME.toPrefixString(namespaceService));
+
+        Map<QName, PropertyDefinition> props = typeDef.getProperties();
+        PropertyDefinition alvexConfigProp = props.getOrDefault(
+                AlvexRegistersContentModel.PROP_ALVEX_REGISTER_ITEM_DISPLAY_NAME_CONFIG, null);
+        if(alvexConfigProp != null) {
+            return alvexConfigProp.getDefaultValue();
+        } else if (ContentModel.TYPE_PERSON.equals(typeDef.getName())) {
+            return StrSubstitutor.replace("$${${firstName}} $${${lastName}}", defaultModel);
+        } else if (typeDef.getDefaultAspectNames().contains(ContentModel.ASPECT_TITLED)) {
+            return StrSubstitutor.replace("$${${nodeTitle}}", defaultModel);
+        } else {
+            return StrSubstitutor.replace("$${${nodeName}}", defaultModel);
+        }
+    }
+
     protected Map<QName, PropertyDefinition> getAllProperties(QName typeName)
     {
         return getAllProperties(dictionaryService.getType(typeName));
@@ -158,6 +196,8 @@ public abstract class AbstractRegistryWebScript extends AbstractWebScript implem
         for(AspectDefinition aspect : aspects) {
             props.putAll(aspect.getProperties());
         }
+
+        props.keySet().removeAll(SYSTEM_FIELDS);
         return props;
     }
 
@@ -175,6 +215,8 @@ public abstract class AbstractRegistryWebScript extends AbstractWebScript implem
         for(AspectDefinition aspect : aspects) {
             assocs.putAll(aspect.getAssociations());
         }
+
+        assocs.keySet().removeAll(SYSTEM_FIELDS);
         return assocs;
     }
 
@@ -235,7 +277,7 @@ public abstract class AbstractRegistryWebScript extends AbstractWebScript implem
             item.put("nodeRef", itemRef.toString());
             item.put("type", type.toPrefixString(namespaceService));
             item.put("typeDisplayName", dictionaryService.getType(type).getTitle(messageService));
-            item.put("properties", getPropertiesShortFormatJSON(itemRef));
+            item.put("properties", getPropertiesJSON(itemRef));
             item.put("permissions", getUserPermissionsJSON(itemRef));
         } catch (JSONException e) {
             //
@@ -261,7 +303,7 @@ public abstract class AbstractRegistryWebScript extends AbstractWebScript implem
         return userPermissionJSON;
     }
 
-    protected JSONObject getPropertiesShortFormatJSON(NodeRef itemRef)
+    protected JSONObject getPropertiesJSON(NodeRef itemRef)
     {
         JSONObject properties = new JSONObject();
         try
@@ -303,13 +345,6 @@ public abstract class AbstractRegistryWebScript extends AbstractWebScript implem
             //
         }
         return properties;
-    }
-
-    public String getDisplayName(NodeRef nodeRef, QName assocQName, NodeRef parentRef)
-    {
-        QName nodeTypeQName = nodeService.getType(nodeRef);
-        Serializable name = nodeService.getProperty(nodeRef, ContentModel.PROP_NAME);
-        return (name != null ? name.toString() : "");
     }
 
     public Object getValueJSON(QName prop, Object value, DateTimeFormatter formatter)
@@ -357,6 +392,26 @@ public abstract class AbstractRegistryWebScript extends AbstractWebScript implem
             }
             return allValuesJSON;
         }
+    }
+
+    public String getDisplayName(NodeRef nodeRef, QName assocQName, NodeRef parentRef)
+    {
+        DateTimeFormatter formatter = ISODateTimeFormat.date();
+        QName nodeTypeQName = nodeService.getType(nodeRef);
+        String displayNameString = getTypeDisplayNameConfig(nodeTypeQName);
+        Map<QName,Serializable> props = nodeService.getProperties(nodeRef);
+
+        Map<String, String> model = new HashMap<>();
+        for(QName key : props.keySet()) {
+            Serializable value = props.get(key);
+            if(value instanceof Date) {
+                model.put(key.toPrefixString(namespaceService), formatter.print(((Date) value).getTime()));
+            } else {
+                model.put(key.toPrefixString(namespaceService), value.toString());
+            }
+        }
+
+        return StrSubstitutor.replace(displayNameString, model);
     }
 
     protected JSONObject getRegistryJSON(NodeRef targetListRef, 
@@ -418,6 +473,7 @@ public abstract class AbstractRegistryWebScript extends AbstractWebScript implem
                     resp);
             } catch (SQLException e) {
                 logger.error("Can not execute SQL statement: "+ e.getMessage());
+                e.printStackTrace();
                 // Really slow Java-based search across Alfresco Repo
                 // Failback for non-Postgres env
                 responseItems = findResponseItemsJava(targetListRef, dataTypeQName, 
@@ -684,18 +740,18 @@ public abstract class AbstractRegistryWebScript extends AbstractWebScript implem
         } else {
             sql += " order by alf_node.audit_created " + sortDirection;
         }
-        Integer _startIndex = (startIndex >= 0 ? startIndex : 0);
-        sql += " offset " + _startIndex;
         if(pageSize > 0) {
             sql += " limit " + pageSize;
         }
+        Integer _startIndex = (startIndex >= 0 ? startIndex : 0);
+        sql += " offset " + _startIndex;
 
         logger.trace("Searching with: " + sql);
         logger.trace("Total with: " + totalItemsSql);
 
         Connection con = null;
         try {
-            con = dbPool.getConnection();
+            con = dataSource.getConnection();
 
             PreparedStatement statement = con.prepareStatement(sql);
             ResultSet res = statement.executeQuery();

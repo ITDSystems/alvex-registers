@@ -1,5 +1,6 @@
 package com.alvexcore.repo.registers.api;
 
+import com.alvexcore.repo.registers.AlvexRegistersContentModel;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.extensions.webscripts.WebScriptRequest;
@@ -44,6 +45,7 @@ public class TypeDescription extends AbstractRegistryWebScript {
                 fields.put(getAssociationDescriptionJSON(assocQName));
             }
 
+            resp.put("displayNameConfig", getTypeDisplayNameConfig(typeName));
             resp.put("fields", fields);
         } catch (JSONException e) {
             //

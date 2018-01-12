@@ -14,6 +14,10 @@
           class="com.alvexcore.repo.registers.api.ConstraintOptions" 
           parent="AbstractRegistryWebScript"/>
 
+    <bean id="webscript.com.alvexcore.registers.api.DeleteItems.delete" 
+          class="com.alvexcore.repo.registers.api.DeleteItems" 
+          parent="AbstractRegistryWebScript"/>
+
     <bean id="webscript.com.alvexcore.registers.api.RegistryAsXlsx.post" 
           class="com.alvexcore.repo.registers.api.RegistryAsXlsx" 
           parent="AbstractRegistryWebScript"/>

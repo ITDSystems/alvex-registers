@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Delete registry items in a batch</shortname>
+  <description>Delete registry items in a batch</description>
+  <url>/api/alvex/registers/items</url>
+  <authentication>user</authentication>
+  <format default='json'>any</format>
+  <family>Alvex registers API</family>
+</webscript>

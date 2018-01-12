@@ -32,7 +32,7 @@ public class RegistryItemsById extends AbstractRegistryWebScript {
         for(String paramName : webScriptRequest.getParameterNames()) {
             if(paramName.startsWith("filter_")) {
                 String paramValue = webScriptRequest.getParameter(paramName);
-                if(paramValue != null && paramValue.isEmpty()) {
+                if(paramValue != null && !paramValue.isEmpty()) {
                     filters.put(paramName.replace("filter_", ""), paramValue);
                 }
             }

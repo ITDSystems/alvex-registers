@@ -31,20 +31,12 @@ define(["dojo/_base/declare",
 
       registerRenderName: null,
 
-      propertyToRenderMap: {
-        "cm:person": "%cm:firstName% %cm:lastName%",
-        "alvexreg:invoice": "%alvexreg:id%"
-      },
-
       postCreate: function alvex_renderers_registerItemLink__postCreate() {
         this.subscriptionTopic = "ST_" + this.generateUuid();
         this.itemsToShow = [];
         this.alfSubscribe(this.subscriptionTopic, lang.hitch(this, this.render), true);
         var data = [];
-        if (this.isDatagridPage) {
-          var propToRender = this.currentItemPropertyForDataItems.slice(0, this.currentItemPropertyForDataItems.lastIndexOf(".")) + ".value";
-          data = lang.getObject(propToRender, false, this.currentItem).split(",");
-        } else if (this.isArray) {
+        if (this.isArray) {
           data = lang.getObject(this.propertyToRender, false, this.currentItem);
 
         } else if (ObjectTypeUtils.isString(this.propertyToRender) &&
@@ -67,44 +59,18 @@ define(["dojo/_base/declare",
               var responseTopic = this.generateUuid();
               var handle = this.alfSubscribe(responseTopic + "_SUCCESS", lang.hitch(this, function(payload) {
                 this.alfUnsubscribe(handle);
-                var node = lang.getObject("response.item.node", false, payload);
-                if (node && this.propertyToRenderMap[node.type]) {
-                  //payload.response.item.linkLabel = lang.getObject("properties." + this.propertyToRenderMap[node.type], false, node);
-                  var tmprenderedValue = this.propertyToRenderMap[node.type];
-                  var start = 0;
-                  start = tmprenderedValue.indexOf("%");
-
-                  while (start !== -1) {
-                    var end = tmprenderedValue.indexOf("%", start + 1);
-                    if (end !== -1) {
-                      var prop = tmprenderedValue.substr(start + 1, end - start - 1);
-                      if ((node["properties"].hasOwnProperty(prop)) || (prop.indexOf("alvexreg:") !== -1) || (prop.indexOf("cm:") !== -1)) {
-                        var value = this.getRenderedProperty(lang.getObject("properties." + prop, false, node));
-                        if (value.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/) !== null) {
-                          value = value.match(/^\d{4}-\d{2}-\d{2}/)[0];
-                          value = value.substr(8, 2) + "." + value.substr(5, 2) + "." + value.substr(0, 4);
-                        }
-                        tmprenderedValue = tmprenderedValue.replace(tmprenderedValue.substr(start, end - start + 1), value);
-                        start = tmprenderedValue.indexOf("%");
-                      } else {
-
-                        start = tmprenderedValue.indexOf("%", end + 1);
-                      }
-                    } else {
-                      //there is only one % symbol - probably used in string
-                      start = -1;
-                    }
-                  }
-                  payload.response.item.linkLabel = tmprenderedValue;
+                var node = lang.getObject("response", false, payload);
+                if (node) {
+                  payload.response.linkLabel = lang.getObject("displayName", false, node);
                 } else {
-                  payload.response.item.linkLabel = nodeRef;
+                  payload.response.linkLabel = nodeRef;
                 }
-                this.itemsToShow.push(payload.response.item);
+                this.itemsToShow.push(payload.response);
                 this.updateSelectedFiles(this.subscriptionTopic);
               }), true);
 
               // 3rd argument in alfPublish - true - for global publish
-              this.alfPublish(topics.GET_DOCUMENT, {
+              this.alfPublish("ALVEX_GET_REGISTER_ITEM", {
                 alfResponseTopic: responseTopic,
                 nodeRef: nodeRef
               }, true);
@@ -157,7 +123,7 @@ define(["dojo/_base/declare",
       },
 
       updateSelectedFiles: function alvex_renderers_RegisterItemLink__updateSelectedFiles(topic) {
-        var widgetsForView = (this.isDatagridPage) ? lang.clone(this.widgetsForDatagridView) : lang.clone(this.widgetsForView);
+        var widgetsForView = lang.clone(this.widgetsForView);
         this.processObject(["processInstanceTokens"], widgetsForView);
         this.alfPublish(topic, {
           widgets: widgetsForView
@@ -199,51 +165,6 @@ define(["dojo/_base/declare",
             }
           }]
         }
-      }],
-
-      widgetsForDatagridView: [{
-                id: "{id}_LINKS_LIST",
-                name: "alfresco/lists/views/AlfListView",
-                config: {
-                    noItemsMessage: " ",
-                    currentData: {
-                        items: "{itemsToShow}"
-                    },
-                    widgets:[
-                        {
-                            name: "alfresco/lists/views/layouts/Row",
-                            config: {
-                                widgetModelModifiers: ["processCurrentItemTokens"],
-                                widgets: [
-                                    {
-                                        name: "alfresco/lists/views/layouts/Cell",
-                                        config: {
-                                            widgets: [
-                                                {
-                                                    id: "{id}_SELECTED_FILES_NAME",
-                                                    name: "alfresco/renderers/Link",
-                                                    config: {
-                                                        linkLabel: "{registerRenderName}",
-                                                        publishTopic: "ALF_NAVIGATE_TO_PAGE",
-                                                        publishPayloadType: "PROCESS",
-                                                        useCurrentItemAsPayload: false,
-                                                        publishGlobal: true,
-                                                        publishPayloadModifiers: ["processCurrentItemTokens"],
-                                                        publishPayload: {
-                                                            url: "/dp/ws/register-item#nodeRef={nodeRef}&form=view",
-                                                            type: "SHARE_PAGE_RELATIVE",
-                                                            target: "CURRENT"
-                                                        }
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            }]
+      }]
     });
   });

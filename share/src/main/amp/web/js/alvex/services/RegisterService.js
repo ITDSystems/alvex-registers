@@ -16,8 +16,7 @@ define(["dojo/_base/declare",
     "alfresco/lists/views/layouts/Cell",
     "alfresco/lists/views/layouts/HeaderCell",
     "alfresco/renderers/Date",
-    "alfresco/renderers/Property",
-    "alvex/renderers/RegisterItemLink"
+    "alfresco/renderers/Property"
   ],
   function(declare, BaseService, CoreXhr, NodeUtils, topics, array, lang, AlfConstants, $, hashUtils) {
 
@@ -42,6 +41,7 @@ define(["dojo/_base/declare",
         this.alfSubscribe("ALVEX_REGISTERS_NAVIGATE_TO_PAGE_AND_SAVE_HASH", lang.hitch(this, this.onNavigateToPageAndSaveHash));
         /*  this.alfSubscribe("ALVEX_REGISTER_VIEW_RECORD_VERSIONS", lang.hitch(this, this.onViewRecordVersions));
           this.alfSubscribe("ALVEX_REGISTER_REVERT_RECORD_VERSION", lang.hitch(this, this.onRevertRecordVersion));*/
+        this.alfSubscribe("ALVEX_GET_REGISTER_ITEM", lang.hitch(this, this.onGetRegisterItem));
       },
 
       defaultDataTypeMappings: {
@@ -1180,5 +1180,28 @@ define(["dojo/_base/declare",
         });
         this.alfPublish("ALF_CLOSE_DIALOG");
       },
+
+      onGetRegisterItem: function alvex_services_RegisterService__onGetRegisterItem(payload) {
+        if (!payload || !payload.nodeRef) {
+          this.alfLog("warn", "A request was made to retrieve the details of a document but no 'nodeRef' attribute was provided", payload, this);
+        } else {
+          var nodeRef = NodeUtils.processNodeRef(payload.nodeRef),
+            id = nodeRef.id;
+
+          var params = "?noCache=" + new Date().getTime();
+
+          var alfTopic = payload.alfResponseTopic || "ALVEX_GET_REGISTER_ITEM";
+          var url = AlfConstants.PROXY_URI + "api/alvex/registers/items/" + id + params;
+
+          var config = {
+            alfTopic: alfTopic,
+            url: url,
+            method: "GET",
+            callbackScope: this,
+            originalPayload: payload
+          };
+          this.serviceXhr(config);
+        }
+      }
     });
   });

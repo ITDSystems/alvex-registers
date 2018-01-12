@@ -574,7 +574,8 @@ define(["dojo/_base/declare",
                 alfDestination: originalRequestConfig.data.node.nodeRef,
                 itemId: originalRequestConfig.data.itemType,
                 itemKind: "type",
-                mode: "create"
+                mode: "create",
+                siteId: siteId
               }
             }
           });
@@ -901,41 +902,43 @@ define(["dojo/_base/declare",
                   }]
                 }
               },
+              {
+                name: "alfresco/renderers/PublishAction",
+                config: {
+                  altText: "registers.new-item-from-template.label",
+                  iconClass: "add-icon-16",
+                  publishTopic: "CREATE_REGISTER_ITEM_FORM",
+                  publishPayloadType: "PROCESS",
+                  publishPayloadModifiers: ["processCurrentItemTokens"],
+                  publishPayload: {
+                    alfDestination: originalRequestConfig.data.node.nodeRef,
+                    itemId: originalRequestConfig.data.itemType,
+                    itemKind: "type",
+                    mode: "create",
+                    template: "{properties}",
+                    siteId: siteId
+                  },
+                  publishGlobal: true,
+                  renderFilter: [{
+                    property: "permissions.userAccess.create",
+                    values: [true]
+                  }]
+                }
+              },
               /*{
-                             name: "alfresco/renderers/PublishAction",
-                             config: {
-                               altText: "registers.new-item-from-template.label",
-                               iconClass: "add-icon-16",
-                               publishTopic: "CREATE_REGISTER_ITEM_FORM",
-                               publishPayloadType: "PROCESS",
-                               publishPayloadModifiers: ["processCurrentItemTokens"],
-                               publishPayload: {
-                                 alfDestination: originalRequestConfig.data.nodeRef,
-                                 itemId: originalRequestConfig.data.itemType,
-                                 itemKind: "type",
-                                 mode: "create",
-                                 template: "{properties}"
-                               },
-                               publishGlobal: true,
-                               renderFilter: [{
-                                 property: "permissions.userAccess.create",
-                                 values: [true]
-                               }]
-                             }
-                           }, {
-                             name: "alfresco/renderers/PublishAction",
-                             config: {
-                               altText: "registers.action.export",
-                               iconClass: "export-light",
-                               publishTopic: "EXPORT_RECORDS_TO_EXCEL",
-                               publishPayloadType: "PROCESS",
-                               publishPayloadModifiers: ["processCurrentItemTokens"],
-                               publishPayload: {
-                                 nodeRef: "{nodeRef}"
-                               },
-                               publishGlobal: true
-                             }
-                           }, */
+                                          name: "alfresco/renderers/PublishAction",
+                                          config: {
+                                            altText: "registers.action.export",
+                                            iconClass: "export-light",
+                                            publishTopic: "EXPORT_RECORDS_TO_EXCEL",
+                                            publishPayloadType: "PROCESS",
+                                            publishPayloadModifiers: ["processCurrentItemTokens"],
+                                            publishPayload: {
+                                              nodeRef: "{nodeRef}"
+                                            },
+                                            publishGlobal: true
+                                          }
+                                        }, */
               {
                 name: "alfresco/renderers/PublishAction",
                 config: {
@@ -1143,7 +1146,7 @@ define(["dojo/_base/declare",
             }
           });
         } else {
-          this.alfLog("warn", "A request was made to delete items from a Data List but no 'nodeRefs' attribute was provided in the payload", payload, this);
+          this.alfLog("warn", "A request was made to delete items from a Register but no 'nodeRefs' attribute was provided in the payload", payload, this);
         }
       },
 
@@ -1164,7 +1167,7 @@ define(["dojo/_base/declare",
       onDeleteRegisterItemsSuccess: function alvex_services_RegisterService__onDeleteRegisterItemsSuccess(parentLink, response, originalRequestConfig) {
         // TODO: May need a more specific scoped publication
         if (parentLink == null) {
-          this.alfPublish("ALF_DATA_LIST_ALF_DOCLIST_RELOAD_DATA");
+          this.alfPublish("ALVEX_REGISTER_ALF_DOCLIST_RELOAD_DATA");
         } else {
           this.alfPublish("ALF_NAVIGATE_TO_PAGE", {
             url: parentLink,

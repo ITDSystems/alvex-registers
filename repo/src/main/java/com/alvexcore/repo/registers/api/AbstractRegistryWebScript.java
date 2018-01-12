@@ -126,33 +126,37 @@ public abstract class AbstractRegistryWebScript extends AbstractWebScript implem
         dbPool.setPoolMaximumActiveConnections(Integer.parseInt(properties.getProperty("db.pool.max")));*/
     }
 
-    protected JSONObject getConstraintDescriptionJSON(QName constraintName)
+    protected JSONArray getConstraintDescriptionJSON(QName constraintName)
     {
         ConstraintDefinition constraintDef = dictionaryService.getConstraint(constraintName);
         return getConstraintDescriptionJSON(constraintDef);
     }
 
-    protected JSONObject getConstraintDescriptionJSON(ConstraintDefinition constraintDef)
+    protected JSONArray getConstraintDescriptionJSON(ConstraintDefinition constraintDef)
     {
         QName constraintName = constraintDef.getName();
         String constraintType = constraintDef.getConstraint().getType();
 
         JSONObject resp = new JSONObject();
+        JSONArray options = new JSONArray();
         try {
             resp.put("name", constraintName.toPrefixString(namespaceService));
             resp.put("type", constraintType);
 
             if(ListOfValuesConstraint.CONSTRAINT_TYPE.equalsIgnoreCase(constraintType)) {
-                JSONObject options = new JSONObject();
                 ListOfValuesConstraint lovc = (ListOfValuesConstraint)constraintDef.getConstraint();
-                for(String key : lovc.getAllowedValues())
-                    options.put(key, lovc.getDisplayLabel(key, messageService));
+                for(String key : lovc.getAllowedValues()) {
+                    JSONObject option = new JSONObject();
+                    option.put("value", key);
+                    option.put("label", lovc.getDisplayLabel(key, messageService));
+                    options.put(option);
+                }
                 resp.put("options", options);
             }
         } catch (JSONException e) {
             //
         }
-        return resp;
+        return options;
     }
 
     protected String getTypeDisplayNameConfig(QName typeName)
@@ -233,8 +237,12 @@ public abstract class AbstractRegistryWebScript extends AbstractWebScript implem
                 if(constraintDef.getConstraint().getType().equalsIgnoreCase(ListOfValuesConstraint.CONSTRAINT_TYPE))
                     targetConstraintDef = constraintDef;
             }
-            propObj.put("constraint", (targetConstraintDef != null ? getConstraintDescriptionJSON(targetConstraintDef) : JSONObject.NULL));
-            propObj.put("type", propDef.getDataType().getName().toPrefixString(namespaceService));
+            propObj.put("constraint", (targetConstraintDef != null 
+                    ? getConstraintDescriptionJSON(targetConstraintDef) 
+                    : JSONObject.NULL));
+            propObj.put("type", (targetConstraintDef != null 
+                    ? ListOfValuesConstraint.CONSTRAINT_TYPE 
+                    : propDef.getDataType().getName().toPrefixString(namespaceService)));
             propObj.put("multiple", propDef.isMultiValued());
             return propObj;
         } catch (JSONException e) {

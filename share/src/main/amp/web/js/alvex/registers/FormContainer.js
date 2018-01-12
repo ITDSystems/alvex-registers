@@ -34,6 +34,7 @@ define(["dojo/_base/declare",
                 this.alfSubscribe("CHANGE_FORM", lang.hitch(this, this.onChangeForm));
                 this.alfSubscribe("RETRIEVE_RECORD_DETAILS_SUCCESS", lang.hitch(this, this.onRetrieveRecordDetails));
                 this.alfSubscribe("ALF_FORM_ALF_DOCLIST_RELOAD_DATA", lang.hitch(this, this.onShowForm));
+                this.alfSubscribe("EDIT_FORM_CONFIRMATION", lang.hitch(this, this.onEditFormConfirmation));
             },
 
             postCreate: function alvex_registers_FormContainer__postCreate() {
@@ -191,10 +192,7 @@ define(["dojo/_base/declare",
                                     id: "VIEW",
                                     label: "register-item.menu.view",
                                     iconClass: "alf-detailedlist-icon",
-                                    publishTopic: "CHANGE_FORM",
-                                    publishPayload: {
-                                        form: "view"
-                                    },
+                                    publishTopic: "EDIT_FORM_CONFIRMATION",
                                     visibilityConfig: {
                                         initialValue: edit,
                                         rules: [{
@@ -302,6 +300,22 @@ define(["dojo/_base/declare",
                     widgets: MenuBar
                 });
 
+            },
+
+            onEditFormConfirmation: function alvex_services_RegisterService__onEditFormConfirmation(payload) {
+                this.alfServicePublish(topics.REQUEST_CONFIRMATION_PROMPT, {
+                  confirmationTitle: "registers.form.change.notsaved.title",
+                  confirmationPrompt: "registers.form.change.notsaved.message",
+                  confirmationButtonLabel: "registers.form.change.notsaved.yes",
+                  cancellationButtonLabel: "registers.form.change.notsaved.no",
+                  confirmationPublication: {
+                    publishTopic: "CHANGE_FORM",
+                    publishPayload: {
+                        form: "view"
+                    },
+                    publishGlobal: true
+                  }
+                });
             }
 
         });

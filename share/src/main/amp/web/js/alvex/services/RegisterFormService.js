@@ -78,7 +78,6 @@ define(["dojo/_base/declare",
 
       onRenderCreateForm: function alvex_services_RegisterFormService__onRenderCreateForm(response) {
         var siteId = response.widgets[0].config.okButtonPublishPayload.siteId;
-        //var registerRef = response.widgets[0].config.okButtonPublishPayload.alf_destination;
         response.widgets[0].config.showCancelButton = true;
         response.widgets[0].config.cancelButtonPublishGlobal = true;
         response.widgets[0].config.cancelButtonPublishTopic = "CLOSE_CREATE_FORM"
@@ -97,7 +96,14 @@ define(["dojo/_base/declare",
               for (var i = 0; i < response.widgets[0].config.okButtonPublishPayload.template[key].length; i++) {
                 assocArray = assocArray + response.widgets[0].config.okButtonPublishPayload.template[key][i].nodeRef + ","
               };
-              formValue["assoc_" + key.replace(":", "_")] = assocArray.substr(0, assocArray.length - 1);
+              var newkey = "assoc_" + key.replace(":", "_");
+              formValue[newkey + "_added"] = assocArray.substr(0, assocArray.length - 1);
+              for (var i = 0; i < response.widgets[0].config.widgets.length; i++) {
+                if (response.widgets[0].config.widgets[i].config.name == newkey) {
+                  response.widgets[0].config.widgets[i].config.name = newkey + "_added";
+                  response.widgets[0].config.widgets[i].config.addedAndRemovedValues = false;
+                }
+              }
             } else {
               var newkey = "prop_" + key.replace(":", "_");
               formValue[newkey] = response.widgets[0].config.okButtonPublishPayload.template[key];

@@ -15,6 +15,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.sql.DataSource;
@@ -112,18 +114,6 @@ public abstract class AbstractRegistryWebScript extends AbstractWebScript implem
         authenticationService = serviceRegistry.getAuthenticationService();
         authorityService = serviceRegistry.getAuthorityService();
         permissionService = serviceRegistry.getPermissionService();
-
-        /*Properties properties = new Properties();
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        InputStream inputStream = classLoader.getResourceAsStream("alfresco-global.properties");
-        properties.load(inputStream);
-        dbPool = new PooledDataSource(properties.getProperty("db.driver"),
-                properties.getProperty("db.url"),
-                properties.getProperty("db.username"),
-                properties.getProperty("db.password")
-        );
-        // TODO: add separate option to tune this
-        dbPool.setPoolMaximumActiveConnections(Integer.parseInt(properties.getProperty("db.pool.max")));*/
     }
 
     protected JSONArray getConstraintDescriptionJSON(QName constraintName)
@@ -688,11 +678,7 @@ public abstract class AbstractRegistryWebScript extends AbstractWebScript implem
     {
         Map<NodeRef, String> responseItems = new LinkedHashMap<>();
 
-        String totalItemsSql = "select count(uuid) as total from alf_node "
-                + "where alf_node.store_id=(select id from alf_store where protocol='workspace' and identifier='SpacesStore') "
-                + "and alf_node.type_qname_id=(select id from alf_qname "
-                            + "where ns_id=(select id from alf_namespace where uri='" + dataTypeQName.getNamespaceURI() + "') "
-                            + "and local_name='" + dataTypeQName.getLocalName() + "') ";
+        String totalItemsSql = "select count(uuid) as total from alf_node ";
 
         Boolean sortByCmData = sortFieldQName.getNamespaceURI().equalsIgnoreCase(NamespaceService.CONTENT_MODEL_1_0_URI);
         String sql;
@@ -705,19 +691,20 @@ public abstract class AbstractRegistryWebScript extends AbstractWebScript implem
                     + "and alf_node_properties.qname_id=(select id from alf_qname "
                         + "where ns_id=(select id from alf_namespace where uri='" + sortFieldQName.getNamespaceURI() + "') "
                         + "and local_name='" + sortFieldQName.getLocalName() + "') "
-                    + ") "
-                + "where alf_node.store_id=(select id from alf_store where protocol='workspace' and identifier='SpacesStore') "
-                + "and alf_node.type_qname_id=(select id from alf_qname "
-                    + "where ns_id=(select id from alf_namespace where uri='" + dataTypeQName.getNamespaceURI() + "') "
-                    + "and local_name='" + dataTypeQName.getLocalName() + "') ";
+                    + ") ";
         // TODO: crazy hack, can not sort by cm:* props as below
         } else {
-            sql = "select alf_node.uuid, alf_node.audit_created from alf_node "
-                + "where alf_node.store_id=(select id from alf_store where protocol='workspace' and identifier='SpacesStore') "
-                + "and alf_node.type_qname_id=(select id from alf_qname "
-                            + "where ns_id=(select id from alf_namespace where uri='" + dataTypeQName.getNamespaceURI() + "') "
-                            + "and local_name='" + dataTypeQName.getLocalName() + "') ";
+            sql = "select alf_node.uuid, alf_node.audit_created from alf_node ";
         }
+        // Base search part: store, type, parent
+        String baseSearch = "where alf_node.store_id=(select id from alf_store where protocol='workspace' and identifier='SpacesStore') "
+                + "and alf_node.type_qname_id=(select id from alf_qname "
+                    + "where ns_id=(select id from alf_namespace where uri='" + dataTypeQName.getNamespaceURI() + "') "
+                    + "and local_name='" + dataTypeQName.getLocalName() + "') "
+                + "and id in (select child_node_id from alf_child_assoc where "
+                    + "parent_node_id = (select id from alf_node where uuid='" + targetListRef.getId() + "')) ";
+        sql += baseSearch;
+        totalItemsSql += baseSearch;
 
         List<String> filterSql = new ArrayList<>();
         for(QName attrQName : _filters.keySet()) {
@@ -793,6 +780,7 @@ public abstract class AbstractRegistryWebScript extends AbstractWebScript implem
 
     protected String getSqlFilterForAttr(QName attrQName, String attrString)
     {
+        AssociationDefinition assocDef = dictionaryService.getAssociation(attrQName);
         Boolean invert = attrString.startsWith("!");
         String attrValue = invert ? attrString.substring(1).toLowerCase() : attrString.toLowerCase();
         // Prop filter
@@ -848,7 +836,7 @@ public abstract class AbstractRegistryWebScript extends AbstractWebScript implem
                 return propSqlBase + (invert ? "lower(string_value) NOT " + _search : "lower(string_value) " + _search);
             }
         // Assoc filter
-        } else if(dictionaryService.getAssociation(attrQName) != null) {
+        } else if(assocDef != null) {
             String uri = attrQName.getNamespaceURI();
             String name = attrQName.getLocalName();
             try {
@@ -861,18 +849,23 @@ public abstract class AbstractRegistryWebScript extends AbstractWebScript implem
                             + "and target_node_id=(select id from alf_node where uuid='" + requestedNodeRef.getId() + "')";
             } catch (MalformedNodeRefException e) {
                 // DisplayName-based search
-                
+                List<QName> fields = new ArrayList<>();
+                String displayNameConfig = getTypeDisplayNameConfig(assocDef.getTargetClass().getName());
+                Pattern p = Pattern.compile("\\{(.*?)\\}");
+                Matcher m = p.matcher(displayNameConfig);
+                while (m.find()) {
+                    fields.add(QName.resolveToQName(namespaceService, m.group(1)));
+                }
                 String sqlBase = "select source_node_id from alf_node_assoc "
                             + "where type_qname_id=(select id from alf_qname "
                                     + "where ns_id=(select id from alf_namespace where uri='" + uri + "') "
-                                    + "and local_name='" + name + "') ";
-                return sqlBase;
-                /*            + "and target_node_id in ";
+                                    + "and local_name='" + name + "') "
+                            + "and target_node_id in ";
                 List<String> displayNameFilters = new ArrayList<>();
-                for(QName dnQName : getSearchFields(dictionaryService.getAssociation(attrQName).getTargetClass().getName())) {
-                    displayNameFilters.add(getSqlFilterForAttr(dnQName, attrValue));
+                for(QName field : fields) {
+                    displayNameFilters.add(getSqlFilterForAttr(field, attrValue));
                 }
-                return sqlBase + "(" + String.join(" union ", displayNameFilters) + ")";*/
+                return sqlBase + "(" + String.join(" union ", displayNameFilters) + ")";
             }
         // Should never happen
         } else {

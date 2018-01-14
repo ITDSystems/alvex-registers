@@ -643,9 +643,6 @@ define(["dojo/_base/declare",
                       publishTopic: "ALVEX_REGISTER_DELETE_ITEM",
                       publishPayloadType: "PROCESS",
                       publishPayloadModifiers: ["processCurrentItemTokens"],
-                      publishPayload: {
-                        files: ["{nodeRef}"]
-                      },
                       publishGlobal: true
                     }
                   }]
@@ -948,7 +945,7 @@ define(["dojo/_base/declare",
                   publishPayloadType: "PROCESS",
                   publishPayloadModifiers: ["processCurrentItemTokens"],
                   publishPayload: {
-                    files: ["{nodeRef}"]
+                    nodeRefs: ["{nodeRef}"]
                   },
                   publishGlobal: true,
                   renderFilter: [{
@@ -1129,7 +1126,13 @@ define(["dojo/_base/declare",
       },
 
       onDeleteRegisterItemsRequest: function alvex_services_RegisterService__onDeleteRegisterItemsRequest(payload) {
-        if (payload.files) {
+        if (payload.selectedItems) {
+          payload.nodeRefs = [];
+          for (var i = 0; i < payload.selectedItems.length; i++) {
+            payload.nodeRefs.push(payload.selectedItems[i].nodeRef);
+          }
+        }
+        if (payload.nodeRefs) {
           this.alfServicePublish(topics.REQUEST_CONFIRMATION_PROMPT, {
             confirmationTitle: "registers.delete.window.title",
             confirmationPrompt: "registers.delete.window.message",
@@ -1138,7 +1141,7 @@ define(["dojo/_base/declare",
             confirmationPublication: {
               publishTopic: "ALVEX_REGISTER_DELETE_ITEM_CONFIRMATION",
               publishPayload: {
-                files: payload.files,
+                nodeRefs: payload.nodeRefs,
                 alfResponseScope: payload.alfResponseScope,
                 parentLink: payload.parentLink
               },
@@ -1154,12 +1157,12 @@ define(["dojo/_base/declare",
         var successFunction = lang.hitch(this, this.onDeleteRegisterItemsSuccess, payload.parentLink);
         var failureFunction = lang.hitch(this, this.onDeleteRegisterItemsFailure, payload.parentLink);
         this.serviceXhr({
-          url: AlfConstants.PROXY_URI + "slingshot/doclib/action/files?alf_method=delete",
+          url: AlfConstants.PROXY_URI + "api/alvex/registers/items?alf_method=delete",
           method: "POST",
           successCallback: successFunction,
           failureCallback: failureFunction,
           data: {
-            files: payload.files
+            nodeRefs: payload.nodeRefs
           }
         });
       },

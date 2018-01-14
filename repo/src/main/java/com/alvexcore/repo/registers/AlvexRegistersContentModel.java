@@ -11,5 +11,6 @@ public class AlvexRegistersContentModel {
     public final static QName PROP_ALVEX_REGISTER_ITEM_TYPE = QName.createQName(REGISTERS_MODEL_URI, "registerItemType");
 
     public final static QName TYPE_ALVEX_REGISTER_ITEM = QName.createQName(REGISTERS_MODEL_URI, "registerItem");
+    public final static QName PROP_ALVEX_REGISTER_ITEM_ID = QName.createQName(REGISTERS_MODEL_URI, "id");
     public final static QName PROP_ALVEX_REGISTER_ITEM_DISPLAY_NAME_CONFIG = QName.createQName(REGISTERS_MODEL_URI, "displayNameConfig");
 }

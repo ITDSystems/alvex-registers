@@ -24,6 +24,7 @@ import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.dictionary.constraint.ListOfValuesConstraint;
 import org.alfresco.repo.i18n.MessageService;
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.AspectDefinition;
 import org.alfresco.service.cmr.dictionary.AssociationDefinition;
@@ -287,9 +288,10 @@ public abstract class AbstractRegistryWebScript extends AbstractWebScript implem
     protected JSONObject getUserPermissionsJSON(NodeRef itemRef) throws JSONException
     {
         Map<String,String> permissionsToCheck = new HashMap<>();
-        permissionsToCheck.put("create", "CreateChildren");
-        permissionsToCheck.put("edit", "Write");
-        permissionsToCheck.put("delete", "Delete");
+        permissionsToCheck.put("view", PermissionService.READ);
+        permissionsToCheck.put("create", PermissionService.CREATE_CHILDREN);
+        permissionsToCheck.put("edit", PermissionService.WRITE);
+        permissionsToCheck.put("delete", PermissionService.DELETE);
 
         JSONObject userPermissionJSON = new JSONObject();
         JSONObject userAccess = new JSONObject();
@@ -307,6 +309,16 @@ public abstract class AbstractRegistryWebScript extends AbstractWebScript implem
         JSONObject properties = new JSONObject();
         try
         {
+            // Handle permissions
+            boolean canRead = AccessStatus.ALLOWED.equals(permissionService.hasPermission(itemRef, PermissionService.READ));
+            if(!canRead) {
+                AuthenticationUtil.runAsSystem(() -> {
+                    QName prop = AlvexRegistersContentModel.PROP_ALVEX_REGISTER_ITEM_ID;
+                    properties.put(prop.toPrefixString(namespaceService), (String)nodeService.getProperty(itemRef, prop));
+                    return null;
+                });
+                return properties;
+            }
             // Properties
             Map<QName,Serializable> props = nodeService.getProperties(itemRef);
             DateTimeFormatter dateTimeFormatter = ISODateTimeFormat.dateTime();
@@ -395,24 +407,25 @@ public abstract class AbstractRegistryWebScript extends AbstractWebScript implem
 
     public String getDisplayName(NodeRef nodeRef)
     {
-        DateTimeFormatter formatter = ISODateTimeFormat.date();
-        QName nodeTypeQName = nodeService.getType(nodeRef);
-        String displayNameString = getTypeDisplayNameConfig(nodeTypeQName);
-        Map<QName,Serializable> props = nodeService.getProperties(nodeRef);
+        return AuthenticationUtil.runAsSystem(() -> {
+            DateTimeFormatter formatter = ISODateTimeFormat.date();
+            QName nodeTypeQName = nodeService.getType(nodeRef);
+            String displayNameString = getTypeDisplayNameConfig(nodeTypeQName);
+            Map<QName,Serializable> props = nodeService.getProperties(nodeRef);
 
-        Map<String, String> model = new HashMap<>();
-        for(QName key : props.keySet()) {
-            Serializable value = props.get(key);
-            if(value == null)
-                continue;
-            if(value instanceof Date) {
-                model.put(key.toPrefixString(namespaceService), formatter.print(((Date) value).getTime()));
-            } else {
-                model.put(key.toPrefixString(namespaceService), value.toString());
+            Map<String, String> model = new HashMap<>();
+            for(QName key : props.keySet()) {
+                Serializable value = props.get(key);
+                if(value == null)
+                    continue;
+                if(value instanceof Date) {
+                    model.put(key.toPrefixString(namespaceService), formatter.print(((Date) value).getTime()));
+                } else {
+                    model.put(key.toPrefixString(namespaceService), value.toString());
+                }
             }
-        }
-
-        return StrSubstitutor.replace(displayNameString, model);
+            return StrSubstitutor.replace(displayNameString, model);
+        });
     }
 
     protected JSONObject getRegistryJSON(NodeRef targetListRef, 

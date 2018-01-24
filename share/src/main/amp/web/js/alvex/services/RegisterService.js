@@ -16,7 +16,8 @@ define(["dojo/_base/declare",
     "alfresco/lists/views/layouts/Cell",
     "alfresco/lists/views/layouts/HeaderCell",
     "alfresco/renderers/Date",
-    "alfresco/renderers/Property"
+    "alfresco/renderers/Property",
+    "alvex/renderers/RegisterItemPermissions"
   ],
   function(declare, BaseService, CoreXhr, NodeUtils, topics, array, lang, AlfConstants, $, hashUtils) {
 
@@ -763,6 +764,24 @@ define(["dojo/_base/declare",
           }
         });
 
+        widgetsForHeader.push({
+          name: "alfresco/lists/views/layouts/HeaderCell",
+          config: {
+            label: "registers.column.header.permissions",
+            sortable: false
+          }
+        });
+        rowWidgets.push({
+          name: "alfresco/lists/views/layouts/Cell",
+          config: {
+            width: "30px",
+            additionalCssClasses: "mediumpad",
+            widgets: [{
+              name: "alvex/renderers/RegisterItemPermissions"
+            }]
+          }
+        });
+
         array.forEach(columnsToShow, function(column) {
 
           fields.push(column.name);
@@ -876,6 +895,10 @@ define(["dojo/_base/declare",
                     type: "SHARE_PAGE_RELATIVE",
                     target: "CURRENT"
                   },
+                  renderFilter: [{
+                    property: "permissions.userAccess.view",
+                    values: [true]
+                  }],
                   publishGlobal: true
                 }
               },

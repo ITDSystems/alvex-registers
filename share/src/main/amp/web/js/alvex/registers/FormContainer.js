@@ -258,7 +258,7 @@ define(["dojo/_base/declare",
                             id: "DELETE",
                             label: "register-item.menu.delete",
                             iconClass: "alf-delete-icon",
-                            publishTopic: "DELETE_RECORD",
+                            publishTopic: "ALVEX_REGISTER_DELETE_ITEM",
                             publishPayloadType: "PROCESS",
                             publishPayloadModifiers: ["processCurrentItemTokens"],
                             publishPayload: {

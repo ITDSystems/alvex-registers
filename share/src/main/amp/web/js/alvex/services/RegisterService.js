@@ -8,6 +8,7 @@ define(["dojo/_base/declare",
     "service/constants/Default",
     "jquery",
     "alfresco/util/hashUtils",
+    "dojo/dom-construct",
     // No call backs from here...
     "alfresco/layout/TitleDescriptionAndContent",
     "alfresco/lists/AlfList",
@@ -19,7 +20,7 @@ define(["dojo/_base/declare",
     "alfresco/renderers/Property",
     "alvex/renderers/RegisterItemPermissions"
   ],
-  function(declare, BaseService, CoreXhr, NodeUtils, topics, array, lang, AlfConstants, $, hashUtils) {
+  function(declare, BaseService, CoreXhr, NodeUtils, topics, array, lang, AlfConstants, $, hashUtils, domConstruct) {
 
     return declare([BaseService, CoreXhr], {
 
@@ -43,7 +44,13 @@ define(["dojo/_base/declare",
         /*  this.alfSubscribe("ALVEX_REGISTER_VIEW_RECORD_VERSIONS", lang.hitch(this, this.onViewRecordVersions));
           this.alfSubscribe("ALVEX_REGISTER_REVERT_RECORD_VERSION", lang.hitch(this, this.onRevertRecordVersion));*/
         this.alfSubscribe("ALVEX_GET_REGISTER_ITEM", lang.hitch(this, this.onGetRegisterItem));
+        this.alfSubscribe("EXPORT_RECORDS_TO_EXCEL", lang.hitch(this, this.onExportRecordsToExcel));
+        this.alfSubscribe("ALVEX_EXPORT_RECORDS_TO_EXCEL_CONFIRMATION", lang.hitch(this, this.onExportRecordsToExcelConfirmation));
       },
+
+      siteId: null,
+      columnsToExportValues: {},
+      columnsToExportDefinition: [],
 
       defaultDataTypeMappings: {
         "datetime": {
@@ -220,11 +227,11 @@ define(["dojo/_base/declare",
 
       getRegisters: function alvex_services_RegisterService__getRegisters(payload) {
         if (payload.siteId) {
-          var url = AlfConstants.PROXY_URI + "slingshot/doclib2/doclist/all/site/" + payload.siteId + "/registers/";
-          var successFunction = lang.hitch(this, this.onGetRegistersSuccess, payload.siteId);
+          this.siteId = payload.siteId;
+          var url = AlfConstants.PROXY_URI + "slingshot/doclib2/doclist/all/site/" + this.siteId + "/registers/";
           var config = {
             url: url,
-            successCallback: successFunction,
+            successCallback: this.onGetRegistersSuccess,
             method: "GET"
           };
           this.mergeTopicsIntoXhrPayload(payload, config);
@@ -234,9 +241,8 @@ define(["dojo/_base/declare",
         }
       },
 
-      onGetRegistersSuccess: function alvex_services_RegisterService__onGetRegistersSuccess(siteId, response, originalRequestConfig) {
+      onGetRegistersSuccess: function alvex_services_RegisterService__onGetRegistersSuccess(response, originalRequestConfig) {
         var newResponse = response;
-        newResponse.siteId = siteId;
         this.alfPublish("ALVEX_GET_REGISTERS_SUCCESS", {
           response: newResponse
         }, false, false, originalRequestConfig.alfResponseScope);
@@ -251,7 +257,6 @@ define(["dojo/_base/declare",
           if (result.length == 1) {
             config = result[0];
             config.alfResponseTopic = "SHOW_REGISTER";
-            config.siteId = response.response.siteId;
             this.alfPublish("ALVEX_GET_REGISTER_WIDGETS", config, true);
           }
         }
@@ -333,7 +338,7 @@ define(["dojo/_base/declare",
       },
 
       getRegisterWidgets: function alvex_services_RegisterService__getRegisterWidgets(payload) {
-        if (payload.node.nodeRef && payload.node.properties["alvexreg:registerItemType"] && payload.siteId) {
+        if (payload.node.nodeRef && payload.node.properties["alvexreg:registerItemType"] && this.siteId) {
           var type = payload.node.properties["alvexreg:registerItemType"];
           payload.itemType = type;
           var hash = hashUtils.getHash();
@@ -364,12 +369,11 @@ define(["dojo/_base/declare",
             callbackScope: this
           });
           var url = AlfConstants.URL_SERVICECONTEXT + "com/alvexcore/registers/config/columns?itemType=" + type;
-          var successFunction = lang.hitch(this, this.onColumnsRetrieved, payload.siteId)
           this.serviceXhr({
             url: url,
             data: payload,
             method: "GET",
-            successCallback: successFunction,
+            successCallback: this.onColumnsRetrieved,
             failureCallback: this.onColumnsFailed,
             callbackScope: this
           });
@@ -386,10 +390,10 @@ define(["dojo/_base/declare",
         });
       },
 
-      onColumnsRetrieved: function alvex_services_RegisterService__onColumnsRetrieved(siteId, response, originalRequestConfig) {
+      onColumnsRetrieved: function alvex_services_RegisterService__onColumnsRetrieved(response, originalRequestConfig) {
         var type = originalRequestConfig.data.itemType;
         var url = AlfConstants.PROXY_URI + "api/alvex/registers/model/type/" + type;
-        var successFunction = lang.hitch(this, this.onTypeDescriptionRetrieved, siteId, response, originalRequestConfig);
+        var successFunction = lang.hitch(this, this.onTypeDescriptionRetrieved, response, originalRequestConfig);
         this.serviceXhr({
           url: url,
           method: "GET",
@@ -414,33 +418,13 @@ define(["dojo/_base/declare",
         return temp;
       },
 
-      onTypeDescriptionRetrieved: function alvex_services_RegisterService__onTypeDescriptionRetrieved(siteId, response, originalRequestConfig, payload) {
+      onTypeDescriptionRetrieved: function alvex_services_RegisterService__onTypeDescriptionRetrieved(response, originalRequestConfig, payload) {
         var hash = hashUtils.getHash();
         var processedSelectors = this.processSelectors(payload.fields);
         var columns = lang.getObject("columns", false, response);
         if (columns) {
           var columnsToShow = [];
           var ConfigureFormValues = {};
-          if (this.userColumnConfiguration === "") {
-            for (var i = 0; i < columns.length; i++)
-              if (columns[i].showByDefault === true) {
-                columnsToShow.push(columns[i]);
-                var label = columns[i].name;
-                ConfigureFormValues[label] = true;
-              }
-          } else {
-            var userPreference = this.userColumnConfiguration.split(',');
-            for (var key in userPreference) {
-              var result = $.grep(columns, function(e) {
-                return e.name === userPreference[key];
-              });
-              if (result.length === 1) {
-                columnsToShow.push(result[0]);
-              }
-              var label = userPreference[key];
-              ConfigureFormValues[label] = true;
-            }
-          }
           var ColumnsConfigurationWidgets = [{
             name: "alfresco/forms/controls/CheckBox",
             config: {
@@ -455,6 +439,41 @@ define(["dojo/_base/declare",
               height: "20px"
             }
           }];
+          var columnsToExportValues = {};
+          var columnsToExportDefinition = [{
+            name: "alfresco/html/Label",
+            config: {
+              label: this.message("export.action.text")
+            }
+          }, {
+            name: "alfresco/html/Spacer",
+            config: {
+              height: "20px"
+            }
+          }];
+
+          if (this.userColumnConfiguration === "") {
+            for (var i = 0; i < columns.length; i++)
+              if (columns[i].showByDefault === true) {
+                columnsToShow.push(columns[i]);
+                var label = columns[i].name;
+                ConfigureFormValues[label] = true;
+                columnsToExportValues["export_" + label] = true;
+              }
+          } else {
+            var userPreference = this.userColumnConfiguration.split(',');
+            for (var key in userPreference) {
+              var result = $.grep(columns, function(e) {
+                return e.name === userPreference[key];
+              });
+              if (result.length === 1) {
+                columnsToShow.push(result[0]);
+              }
+              var label = userPreference[key];
+              ConfigureFormValues[label] = true;
+              columnsToExportValues["export_" + label] = true;
+            }
+          }
           for (var i = 0; i < columns.length; i++) {
             ColumnsConfigurationWidgets.push({
               name: "alfresco/forms/controls/CheckBox",
@@ -470,6 +489,16 @@ define(["dojo/_base/declare",
                 }
               }
             });
+            // TODO: add assocs after fix #1
+            if (columns[i].type != "association") {
+              columnsToExportDefinition.push({
+                name: "alfresco/forms/controls/CheckBox",
+                config: {
+                  label: columns[i].label,
+                  name: "export_" + columns[i].name
+                }
+              });
+            }
           };
           var values = {};
           var widgetsForFilters = [];
@@ -542,10 +571,14 @@ define(["dojo/_base/declare",
               filteringTopics.push("_valueChangeOf_" + columnsToShow[key].name.replace(":", "_").toUpperCase() + "2");*/
             }
           }
-          this.continueOnColumnsRetrieved(siteId, ConfigureFormValues, ColumnsConfigurationWidgets, columnsToShow, widgetsForFilters, filteringTopics, originalRequestConfig);
+
+          this.columnsToExportValues = columnsToExportValues;
+          this.columnsToExportDefinition = columnsToExportDefinition;
+
+          this.continueOnColumnsRetrieved(ConfigureFormValues, ColumnsConfigurationWidgets, columnsToShow, widgetsForFilters, filteringTopics, originalRequestConfig);
         }
       },
-      continueOnColumnsRetrieved: function alvex_services_RegisterService__continueOnColumnsRetrieved(siteId, ConfigureFormValues, ColumnsConfigurationWidgets, columnsToShow, widgetsForFilters, filteringTopics, originalRequestConfig) {
+      continueOnColumnsRetrieved: function alvex_services_RegisterService__continueOnColumnsRetrieved(ConfigureFormValues, ColumnsConfigurationWidgets, columnsToShow, widgetsForFilters, filteringTopics, originalRequestConfig) {
         var hash = hashUtils.getHash();
         var fields = [];
         var rowWidgets = [];
@@ -576,7 +609,7 @@ define(["dojo/_base/declare",
                 itemId: originalRequestConfig.data.itemType,
                 itemKind: "type",
                 mode: "create",
-                siteId: siteId
+                siteId: this.siteId
               }
             }
           });
@@ -589,7 +622,7 @@ define(["dojo/_base/declare",
             iconClass: "alf-tableview-icon",
             publishTopic: "EXPORT_RECORDS_TO_EXCEL",
             publishPayload: {
-              nodeRef: originalRequestConfig.data.node.nodeRef
+              registerRef: originalRequestConfig.data.node.nodeRef
             },
             publishGlobal: true
           }
@@ -610,7 +643,7 @@ define(["dojo/_base/declare",
                 responseScope: "ALVEX_REGISTER_",
                 nodeRef: originalRequestConfig.data.node.nodeRef,
                 itemType: originalRequestConfig.data.itemType,
-                siteId: siteId
+                siteId: this.siteId
               },
               formValue: ConfigureFormValues,
               widgets: ColumnsConfigurationWidgets
@@ -711,7 +744,7 @@ define(["dojo/_base/declare",
                     cancelButtonPublishTopic: "SET_FILTERS_HASH_EMPTY",
                     cancelButtonPublishGlobal: false,
                     cancelButtonPublishPayload: {
-                      siteId: siteId
+                      siteId: this.siteId
                     },
                     okButtonLabel: "Search",
                     okButtonPublishTopic: "ALVEX_REGISTER_APPLY_FILTER",
@@ -936,7 +969,7 @@ define(["dojo/_base/declare",
                     itemKind: "type",
                     mode: "create",
                     template: "{properties}",
-                    siteId: siteId
+                    siteId: this.siteId
                   },
                   publishGlobal: true,
                   renderFilter: [{
@@ -945,20 +978,22 @@ define(["dojo/_base/declare",
                   }]
                 }
               },
-              /*{
-                                          name: "alfresco/renderers/PublishAction",
-                                          config: {
-                                            altText: "registers.action.export",
-                                            iconClass: "export-light",
-                                            publishTopic: "EXPORT_RECORDS_TO_EXCEL",
-                                            publishPayloadType: "PROCESS",
-                                            publishPayloadModifiers: ["processCurrentItemTokens"],
-                                            publishPayload: {
-                                              nodeRef: "{nodeRef}"
-                                            },
-                                            publishGlobal: true
-                                          }
-                                        }, */
+              {
+                name: "alfresco/renderers/PublishAction",
+                config: {
+                  altText: "registers.action.export",
+                  iconClass: "actions/document-download-16",
+                  publishTopic: "EXPORT_RECORDS_TO_EXCEL",
+                  publishPayloadType: "PROCESS",
+                  publishPayloadModifiers: ["processCurrentItemTokens"],
+                  publishPayload: {
+                    selectedItems: [{
+                      nodeRef: "{nodeRef}"
+                    }]
+                  },
+                  publishGlobal: true
+                }
+              },
               {
                 name: "alfresco/renderers/PublishAction",
                 config: {
@@ -1107,7 +1142,7 @@ define(["dojo/_base/declare",
           };
 
           var config = {
-            siteId: payload.siteId,
+            siteId: this.siteId,
             alfSuccessTopic: "ALVEX_GET_REGISTERS_SUCCESS",
             alfFailureTopic: "ALVEX_GET_REGISTERS_FAILURE",
             alfResponseTopic: "ALVEX_GET_REGISTERS"
@@ -1231,6 +1266,88 @@ define(["dojo/_base/declare",
           };
           this.serviceXhr(config);
         }
+      },
+
+      onExportRecordsToExcel: function alvex_services_RegisterService__onExportRecordsToExcel(payload) {
+
+        if (this.columnsToExportDefinition.length != 0 && this.columnsToExportValues) {
+
+          var NodeRefs;
+
+          if (payload.registerRef) {
+            NodeRefs = payload.registerRef;
+          } else if (payload.selectedItems) {
+            NodeRefs = [];
+            for (var i = 0; i < payload.selectedItems.length; i++) {
+              NodeRefs.push(payload.selectedItems[i].nodeRef);
+            }
+          }
+
+          this.alfPublish("ALF_CREATE_FORM_DIALOG_REQUEST", {
+            dialogTitle: this.message("export.action.title"),
+            dialogConfirmationButtonTitle: this.message("export.action.ok"),
+            dialogCancellationButtonTitle: this.message("export.action.cancel"),
+            hideTopic: "ALF_CLOSE_DIALOG",
+            formSubmissionTopic: "ALVEX_EXPORT_RECORDS_TO_EXCEL_CONFIRMATION",
+            formSubmissionGlobal: true,
+            formSubmissionPayloadMixin: {
+              NodeRefs: NodeRefs
+            },
+            formValue: this.columnsToExportValues,
+            widgets: this.columnsToExportDefinition
+          });
+        }
+
+      },
+
+      onExportRecordsToExcelConfirmation: function alvex_registers_RegisterService__onExportRecordsToExcelConfirmation(payload) {
+
+        var params = "?noCache=" + new Date().getTime();
+
+        var data = {
+          NodeRefs: payload.NodeRefs,
+          include: []
+        }
+
+        for (var i in payload) {
+          if (i.substr(0, 7) == "export_" && payload[i] == true) {
+            data.include.push(i.substr(7));
+          }
+        }
+
+        var alfTopic = payload.alfResponseTopic;
+        var url = AlfConstants.PROXY_URI + "api/alvex/registers/datalist.xlsx";
+
+        var config = {
+          alfTopic: alfTopic,
+          successCallback: this.onExportRecordsToExcelConfirmationSuccess,
+          url: url,
+          data: data,
+          method: "POST",
+          callbackScope: this
+        };
+        this.serviceXhr(config);
+
+      },
+
+      onExportRecordsToExcelConfirmationSuccess: function alvex_services_RegisterService__onExportRecordsToExcelConfirmationSuccess(response) {
+        this.alfPublish("ALF_CREATE_DIALOG_REQUEST", {
+          dialogId: "EXPORT_DIALOG",
+          dialogTitle: this.message("registers.export.window.title"),
+          widgetsContent: [{
+            name: "alfresco/html/Markdown",
+            config: {
+              markdown: this.message("registers.export.window.text") + " <a href=\"data:application/octet-stream;base64," + response + "\" download=\"export.xls\">**" + this.message("registers.export.window.linklabel") + "**</a>"
+            }
+          }],
+          widgetsButtons: [{
+            name: "alfresco/buttons/AlfButton",
+            config: {
+              label: this.message("registers.export.window.close"),
+              publishTopic: "ALF_CLOSE_DIALOG"
+            }
+          }]
+        })
       }
     });
   });

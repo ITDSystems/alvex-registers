@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -100,7 +101,7 @@ public class RegistryAsXlsx extends AbstractRegistryWebScript {
 
             webScriptResponse.setContentEncoding("UTF-8");
             webScriptResponse.setContentType(MimetypeMap.MIMETYPE_EXCEL);
-            webScriptResponse.getOutputStream().write(baos.toByteArray());
+            webScriptResponse.getOutputStream().write(Base64.getEncoder().encode(baos.toByteArray()));
 
         } catch (WebScriptException e) {
             webScriptResponse.setStatus(Status.STATUS_BAD_REQUEST);

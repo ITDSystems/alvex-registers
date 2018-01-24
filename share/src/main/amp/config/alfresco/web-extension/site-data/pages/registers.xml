@@ -1,5 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <page>
   <title>Registers</title>
+  <title-id>page.registers.title</title-id>
   <description>Registers</description>
+  <description-id>page.registers.description</description-id>
 </page>

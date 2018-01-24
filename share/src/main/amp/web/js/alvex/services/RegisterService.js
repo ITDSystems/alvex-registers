@@ -746,7 +746,7 @@ define(["dojo/_base/declare",
                     cancelButtonPublishPayload: {
                       siteId: this.siteId
                     },
-                    okButtonLabel: "Search",
+                    okButtonLabel: "registers.search.button.search",
                     okButtonPublishTopic: "ALVEX_REGISTER_APPLY_FILTER",
                     okButtonPublishGlobal: true
                   }

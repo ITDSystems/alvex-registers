@@ -12,8 +12,8 @@ Compatible with Alfresco 5.1 and 5.2.
 
 This component requires:
 * [Alvex Utils](https://github.com/ITDSystems/alvex-utils)
-* Aikau 1.0.101 -- don't try to use 1.0.103, it doesn't work (use 1.0.101.10, it's inside Alfresco 6.0.2-EA)
-* Aikau Forms Runtime Support of the same version as Aikau
+* Aikau 1.0.101 -- don't try to use 1.0.103, it doesn't work (we recommend to use 1.0.101.10, it's inside Alfresco 6.0.2-EA)
+* Aikau Forms Runtime Support of the same version as Aikau (it's not inside Alvex ZIP or AMP, be sure to install it manually)
 
 # Using this project
 

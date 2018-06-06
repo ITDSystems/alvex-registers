@@ -106,9 +106,20 @@ define(["dojo/_base/declare",
                         name: "alfresco/lists/views/layouts/Cell",
                         config: {
                           widgets: [{
-                            name: "alfresco/renderers/Property",
+                            name: "alfresco/renderers/PropertyLink",
                             config: {
-                              propertyToRender: "value"
+                              propertyToRender: "value",
+                              publishTopic: "ALF_NAVIGATE_TO_PAGE",
+                              publishPayloadType: "PROCESS",
+                              useCurrentItemAsPayload: false,
+                              publishPayloadModifiers: ["processCurrentItemTokens"],
+                              publishPayload: {
+                                url: "/document-details?nodeRef={nodeRef}",
+                                type: "SHARE_PAGE_RELATIVE",
+                                target: "NEW"
+                              },
+                              publishGlobal: true,
+                              renderOnNewLine: true
                             }
                           }]
                         }
